@@ -6,12 +6,12 @@ import "../Theme"
 
 Button {
     id: root
-    checkable: true
     implicitHeight: 48
     font.pixelSize: 15
-    font.bold: checked
+    font.bold: selected
 
     property string iconSource: ""
+    property bool selected: false
 
     contentItem: RowLayout {
         spacing: NuTokens.spaceSm
@@ -27,7 +27,7 @@ Button {
         Text {
             Layout.fillWidth: true
             text: root.text
-            color: root.checked ? NuTokens.inverseBase : NuTokens.textInverse
+            color: root.selected ? NuTokens.inverseBase : NuTokens.textInverse
             font: root.font
             verticalAlignment: Text.AlignVCenter
         }
@@ -35,7 +35,7 @@ Button {
 
     background: Rectangle {
         radius: NuTokens.radiusMedium
-        color: root.checked ? NuTokens.panelBase : "transparent"
-        border.color: root.checked ? NuTokens.panelBase : NuTokens.lineStrong
+        color: root.selected ? NuTokens.panelBase : "transparent"
+        border.color: root.selected ? NuTokens.panelBase : NuTokens.lineStrong
     }
 }

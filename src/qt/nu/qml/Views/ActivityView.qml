@@ -4,11 +4,16 @@ import QtQuick.Layouts 1.15
 
 import "../Theme"
 import "../Components"
+import "../Bridge"
 
 ColumnLayout {
     spacing: NuTokens.spaceLg
 
-    Label { text: "Activity"; color: NuTokens.textPrimary; font.pixelSize: 34; font.bold: true }
+    NuPageHeader {
+        Layout.fillWidth: true
+        title: "Activity"
+        detail: "Search, inspect, and export wallet history without changing wallet state."
+    }
 
     RowLayout {
         Layout.fillWidth: true
@@ -21,6 +26,8 @@ ColumnLayout {
     NuDataTable {
         Layout.fillWidth: true
         Layout.fillHeight: true
+        columns: ["Date", "Type", "Label", "Amount"]
+        rows: NuFakeService.recentTransactions
         emptyText: "Transactions will appear here."
     }
 }

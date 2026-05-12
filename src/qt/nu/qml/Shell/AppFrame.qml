@@ -10,6 +10,17 @@ Item {
 
     property string currentRoute: "home"
 
+    function routeIndex(route) {
+        switch (route) {
+        case "send": return 1
+        case "receive": return 2
+        case "activity": return 3
+        case "node": return 4
+        case "settings": return 5
+        default: return 0
+        }
+    }
+
     RowLayout {
         anchors.fill: parent
         spacing: 0
@@ -36,28 +47,20 @@ Item {
                     Layout.fillWidth: true
                 }
 
-                Loader {
+                StackLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    sourceComponent: {
-                        switch (root.currentRoute) {
-                        case "send": return sendView
-                        case "receive": return receiveView
-                        case "activity": return activityView
-                        case "node": return nodeView
-                        case "settings": return settingsView
-                        default: return homeView
-                        }
-                    }
+
+                    currentIndex: root.routeIndex(root.currentRoute)
+
+                    HomeView {}
+                    SendView {}
+                    ReceiveView {}
+                    ActivityView {}
+                    NodeView {}
+                    SettingsView {}
                 }
             }
         }
     }
-
-    Component { id: homeView; HomeView {} }
-    Component { id: sendView; SendView {} }
-    Component { id: receiveView; ReceiveView {} }
-    Component { id: activityView; ActivityView {} }
-    Component { id: nodeView; NodeView {} }
-    Component { id: settingsView; SettingsView {} }
 }

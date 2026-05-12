@@ -9,23 +9,18 @@ import "../Bridge"
 ColumnLayout {
     spacing: NuTokens.spaceLg
 
-    Label {
-        text: "Home"
-        color: NuTokens.textPrimary
-        font.pixelSize: 34
-        font.bold: true
+    NuPageHeader {
+        Layout.fillWidth: true
+        title: "Home"
+        detail: "A neutral command surface for balance, recent activity, and high-confidence wallet actions."
     }
 
-    Rectangle {
+    NuPanel {
         Layout.fillWidth: true
         implicitHeight: 180
-        radius: NuTokens.radiusLarge
-        color: NuTokens.panelBase
-        border.color: NuTokens.lineSubtle
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: NuTokens.spaceXl
             spacing: NuTokens.spaceMd
 
             Label {
@@ -61,11 +56,22 @@ ColumnLayout {
             Layout.preferredWidth: 160
             text: "Send"
         }
+        NuActionButton {
+            Layout.preferredWidth: 180
+            text: "Mask balances"
+        }
+        Item { Layout.fillWidth: true }
+        NuStatusDot {
+            label: "Connected: 4 peers and blockchain up to date"
+            stateColor: NuTokens.stateConnected
+        }
     }
 
     NuDataTable {
         Layout.fillWidth: true
         Layout.fillHeight: true
+        columns: ["Date", "Type", "Label", "Amount"]
+        rows: NuFakeService.recentTransactions
         emptyText: "Recent transactions will appear here."
     }
 }

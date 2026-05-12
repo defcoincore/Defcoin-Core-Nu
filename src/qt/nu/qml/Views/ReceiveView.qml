@@ -9,18 +9,18 @@ import "../Bridge"
 ColumnLayout {
     spacing: NuTokens.spaceLg
 
-    Label { text: "Receive"; color: NuTokens.textPrimary; font.pixelSize: 34; font.bold: true }
+    NuPageHeader {
+        Layout.fillWidth: true
+        title: "Receive"
+        detail: "Generate requests, copy addresses, and keep payment details readable before sharing."
+    }
 
-    Rectangle {
+    NuPanel {
         Layout.fillWidth: true
         implicitHeight: 300
-        radius: NuTokens.radiusLarge
-        color: NuTokens.panelBase
-        border.color: NuTokens.lineSubtle
 
         RowLayout {
             anchors.fill: parent
-            anchors.margins: NuTokens.spaceXl
             spacing: NuTokens.spaceXl
 
             Rectangle {
@@ -49,6 +49,8 @@ ColumnLayout {
     NuDataTable {
         Layout.fillWidth: true
         Layout.fillHeight: true
+        columns: ["Date", "Label", "Address", "Amount"]
+        rows: [["05/12/26", "test", NuFakeService.receiveAddress, "1.00000000 DFC"]]
         emptyText: "Requested payments will appear here."
     }
 }

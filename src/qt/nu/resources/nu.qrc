@@ -9,6 +9,8 @@
         <file>../qml/Components/NuDataTable.qml</file>
         <file>../qml/Components/NuMetricRow.qml</file>
         <file>../qml/Components/NuNavButton.qml</file>
+        <file>../qml/Components/NuPageHeader.qml</file>
+        <file>../qml/Components/NuPanel.qml</file>
         <file>../qml/Components/NuStatusDot.qml</file>
         <file>../qml/Components/NuTimelineGraph.qml</file>
         <file>../qml/Shell/AppFrame.qml</file>

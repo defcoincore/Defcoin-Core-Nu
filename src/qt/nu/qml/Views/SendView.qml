@@ -8,18 +8,18 @@ import "../Components"
 ColumnLayout {
     spacing: NuTokens.spaceLg
 
-    Label { text: "Send"; color: NuTokens.textPrimary; font.pixelSize: 34; font.bold: true }
-
-    Rectangle {
+    NuPageHeader {
         Layout.fillWidth: true
-        radius: NuTokens.radiusLarge
-        color: NuTokens.panelBase
-        border.color: NuTokens.lineSubtle
+        title: "Send"
+        detail: "Compose first, review second, sign last. Irreversible actions stay behind explicit confirmation."
+    }
+
+    NuPanel {
+        Layout.fillWidth: true
         implicitHeight: 280
 
         GridLayout {
             anchors.fill: parent
-            anchors.margins: NuTokens.spaceXl
             columns: 2
             rowSpacing: NuTokens.spaceLg
             columnSpacing: NuTokens.spaceLg

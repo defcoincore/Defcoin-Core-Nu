@@ -42,7 +42,7 @@ Rectangle {
                 Layout.fillWidth: true
                 text: modelData.label
                 iconSource: modelData.icon
-                checked: root.currentRoute === modelData.route
+                selected: root.currentRoute === modelData.route
                 onClicked: root.routeRequested(modelData.route)
             }
         }

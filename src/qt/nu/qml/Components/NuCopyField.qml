@@ -24,7 +24,7 @@ Rectangle {
             text: root.value
             elide: Text.ElideMiddle
             color: NuTokens.textPrimary
-            font.family: "monospace"
+            font.family: "Menlo"
             font.pixelSize: 14
         }
 
