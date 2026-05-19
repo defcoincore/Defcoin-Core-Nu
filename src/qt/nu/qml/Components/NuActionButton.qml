@@ -5,16 +5,43 @@ import "../Theme"
 
 Button {
     id: root
-    implicitHeight: 42
-    font.pixelSize: 15
-    font.bold: true
+    implicitHeight: 48
+    font.pixelSize: NuTokens.fontBody
+    font.weight: Font.DemiBold
+    hoverEnabled: true
+    activeFocusOnTab: true
+    focusPolicy: Qt.StrongFocus
 
     property bool primary: false
     property bool danger: false
+    property string helpText: ""
+    property bool suppressToolTip: false
+
+    Accessible.role: Accessible.Button
+    Accessible.name: text
+    Accessible.description: helpText
+
+    ToolTip.visible: !suppressToolTip && (hovered || activeFocus) && helpText.length > 0
+    ToolTip.text: helpText
+    ToolTip.delay: NuTokens.tooltipDelay
+    ToolTip.timeout: NuTokens.tooltipTimeout
+
+    onPressedChanged: if (pressed) suppressToolTip = true
+    onClicked: suppressToolTip = true
+    onHoveredChanged: if (!hovered) suppressToolTip = false
+    onActiveFocusChanged: if (!activeFocus) suppressToolTip = false
+
+    Keys.onReturnPressed: clicked()
+    Keys.onEnterPressed: clicked()
+    Keys.onSpacePressed: clicked()
+    Keys.onDownPressed: nextItemInFocusChain(true).forceActiveFocus()
+    Keys.onRightPressed: nextItemInFocusChain(true).forceActiveFocus()
+    Keys.onUpPressed: nextItemInFocusChain(false).forceActiveFocus()
+    Keys.onLeftPressed: nextItemInFocusChain(false).forceActiveFocus()
 
     contentItem: Text {
         text: root.text
-        color: root.primary || root.danger ? NuTokens.textInverse : NuTokens.textPrimary
+        color: root.enabled ? (root.primary || root.danger ? NuTokens.textInverse : NuTokens.textPrimary) : NuTokens.textMuted
         font: root.font
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -24,5 +51,6 @@ Button {
         radius: NuTokens.radiusMedium
         color: root.danger ? NuTokens.stateError : (root.primary ? NuTokens.inverseBase : NuTokens.panelBase)
         border.color: root.danger ? NuTokens.stateError : NuTokens.lineStrong
+        border.width: root.activeFocus ? 2 : 1
     }
 }

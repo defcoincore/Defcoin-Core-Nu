@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="AppleTitle" content="Defcoin Core Nu Help">
+  <meta name="keywords" content="Defcoin, wallet, full node, blockchain, transaction, receive, send, PSBT, partially signed transaction, peers, network traffic, debug log, RPC console">
+  <title>Defcoin Core Nu Help</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body {
+      font: 15px/1.58 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0 auto;
+      max-width: 980px;
+      padding: 32px 36px 48px;
+      color: #111;
+      background: #f8f8f5;
+    }
+    h1, h2, h3 { line-height: 1.18; letter-spacing: 0; }
+    h1 { font-size: 2rem; margin: 0 0 .25rem; }
+    h2 { font-size: 1.35rem; margin: 2.2rem 0 .7rem; padding-top: 1rem; border-top: 1px solid #d8d8d1; }
+    h3 { font-size: 1.05rem; margin: 1.25rem 0 .35rem; }
+    p, ul, ol, table { margin-top: .55rem; margin-bottom: 1rem; }
+    li { margin: .38rem 0; }
+    li + li { margin-top: .48rem; }
+    a { color: #1267b1; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .95em; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #d8d8d1; padding: .48rem .62rem; text-align: left; vertical-align: top; }
+    th { background: #ededeb; }
+    .lede { font-size: 1.05rem; }
+    .note { border: 1px solid #d8d8d1; background: #fff; padding: .85rem 1rem; border-radius: 8px; }
+    .warning { border-color: #d5b14b; background: #fff8db; }
+    .toc { columns: 2; column-gap: 2rem; }
+    .toc li { break-inside: avoid; }
+    .source-entry { margin: 1rem 0; padding-top: .3rem; }
+    .term-entry { margin: 1rem 0; padding-top: .2rem; }
+    .term-entry b, .source-entry b { display: inline-block; min-width: 12rem; }
+    @media (prefers-color-scheme: dark) {
+      body { color: #f4f4f0; background: #101214; }
+      h2, th, td, .note { border-color: #39424b; }
+      th { background: #1c2228; }
+      .note { background: #171b1f; }
+      .warning { background: #2b2410; border-color: #836b26; }
+      a { color: #74b9ff; }
+    }
+  </style>
+</head>
+<body>
+  <a name="index"></a>
+  <h1>Defcoin Core Nu Help Manual</h1>
+  <p class="lede">Defcoin Core Nu is the Core Memories full-node wallet release. Text in this manual is selectable and copyable.</p>
+
+  <h2>Table Of Contents</h2>
+  <ol class="toc">
+    <li><a href="#home">Home (Overview)</a></li>
+    <li><a href="#send">Send</a></li>
+    <li><a href="#receive">Receive</a></li>
+    <li><a href="#activity">Activity (Transactions)</a></li>
+    <li><a href="#diagnostics">Diagnostics</a></li>
+    <li><a href="#settings">Settings</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+    <li><a href="#sources">Sources</a></li>
+    <li><a href="details.html" title="Open the local Detailed About help page">Detailed About</a></li>
+  </ol>
+
+  <h2 id="home">Home (Overview)</h2>
+  <p>Defcoin Core Nu is a native full-node wallet for the Defcoin network. It validates blocks, relays peer-to-peer traffic, stores wallet data locally, signs transactions locally, and gives the user direct control over receiving, sending, backup, encryption, and node operation.</p>
+  <p>Nu separates the presentation layer from the inherited Litecoin-derived backend. The backend owns consensus, wallet storage, private keys, transaction signing, peer networking, and RPC. The Qt Quick frontend uses local RPC and keeps irreversible wallet actions explicit.</p>
+  <p>Use Defcoin Core Nu when you want the wallet and validating node on your own computer. The wallet pages manage keys and transactions. Diagnostics shows synchronization, peer connectivity, network traffic, local logs, RPC console output, and peer inspection.</p>
+  <p>Create or open wallets carefully. Back up <code>wallet.dat</code> before upgrades, imports, rescans, recovery work, or moving to another computer. If the wallet is encrypted, keep the passphrase offline and test backups before relying on them.</p>
+  <h3>Cryptocurrency Basics</h3>
+  <p>A cryptocurrency wallet does not store coins as files inside the app. It stores keys that can authorize transactions on the network. Your balance is calculated from the blockchain: the shared transaction record that full nodes validate and keep in sync.</p>
+  <p>A full-node wallet such as Defcoin Core Nu downloads and verifies block and transaction data itself. That takes more disk, network, and startup work than a lightweight wallet, but it gives stronger local verification and better visibility into what your node is doing.</p>
+  <p>A transaction spends previously received outputs to one or more new destinations. A receive address is like an invoice destination: it can be shared so another wallet can pay you. A transaction ID is the public identifier for a broadcast transaction. Confirmations count how many blocks have been added after the transaction was included in a block.</p>
+  <p>Fees pay miners to include transactions in blocks. Higher fees may confirm faster when the network is busy; lower fees may take longer. Nu shows fee choices before broadcast because sending is a one-way action once the backend accepts and broadcasts the transaction.</p>
+  <p>Peers are other nodes your node talks to. They relay blocks, transactions, and peer addresses. More peers can improve network visibility, but peer information is not proof of identity.</p>
+  <h3>Status And Indicators</h3>
+  <p>The Home status strip is intentionally short. It shows the current network state, peer count, block height, synchronization state, and wallet lock state without repeating the same message in several places.</p>
+  <p><b>Network connected</b> means the backend reports active P2P networking and at least a usable node state. <b>Network isolated</b> means peer networking is disabled or not yet active. Settings &gt; Network can request Connect or Isolate.</p>
+  <p><b>Wallet locked</b> means spending/signing requires unlocking the wallet. Unlock only when spending or signing.</p>
+
+  <h2 id="send">Send</h2>
+  <p>Send requires a recipient, amount, and fee choice. Use File &gt; Open URI for <code>defcoin:</code> payment links, or paste/type the recipient directly. Use labels and the address book when available to reduce paste errors. Review every transaction before broadcast because blockchain transactions are intentionally hard to reverse once confirmed.</p>
+  <p>Fee controls are inherited from the backend. If a recommended fee cannot be estimated, the interface should make that state clear instead of pretending the recommended option changed the fee.</p>
+  <p><b>Advanced send options</b> include custom change-address entry and PSBT tools. PSBT tools can create a PSBT from the current Send form, load a PSBT from file or clipboard, ask the wallet to sign available inputs, finalize a complete PSBT, broadcast the finalized transaction, copy the current PSBT, save it, or clear it from the interface.</p>
+  <h3 id="psbt">Partially Signed Transactions</h3>
+  <p><b>PSBT</b> means Partially Signed Bitcoin Transaction. Defcoin inherits this transaction handoff format from Bitcoin-family wallet code. A PSBT is not a normal sent payment yet. It is a package of transaction information that can be reviewed, signed, passed to another signer, finalized, and then broadcast.</p>
+  <p>New users usually do not need PSBT. Use the normal Send flow when this wallet has the keys and you simply want to pay someone. PSBT is useful when the signing step is separated from the preparation step, such as an offline signing machine, a watch-only wallet, a hardware signer, or a multi-person review process.</p>
+  <p>Before using PSBT, make sure you know which wallet owns the keys, which device is expected to sign, and which device is expected to broadcast. If you are unsure, do not finalize or broadcast until the transaction has been reviewed by someone who understands the signing setup.</p>
+  <h3>Wallet Safety</h3>
+  <ul>
+    <li>Encrypt wallets that hold meaningful value.</li>
+    <li>Keep multiple offline backups of <code>wallet.dat</code> after creating or importing keys.</li>
+    <li>Do not paste commands from strangers into Console.</li>
+    <li>Do not expose private keys to miners, pools, websites, or support chats.</li>
+    <li>Test restores with a copy before depending on a backup.</li>
+  </ul>
+
+  <h2 id="receive">Receive</h2>
+  <p>Receive generates a receiving address and QR payment request. The QR code encodes the request information for easier transfer to another wallet. A receive request is local wallet metadata and does not itself prove that money was sent.</p>
+  <p>Use the row information action to reopen a saved receive request, copy its address or URI, and view the QR code. Receiving does not require the sender to know your wallet file or private keys.</p>
+
+  <h2 id="activity">Activity (Transactions)</h2>
+  <p>Activity lists transactions with sortable columns. Columns should sort by their real data type: dates as dates, amounts as numbers, and addresses as addresses rather than plain alphabetic strings. Column widths can be dragged and reset from Settings.</p>
+  <p>Use the information action on a transaction row to open details such as status, confirmations, transaction ID, and explorer links when third-party explorer URLs are enabled. Text can be selected and copied from the details window.</p>
+  <p>Export CSV when you need an external accounting or review copy. CSV exports are plain text and may reveal transaction history.</p>
+
+  <h2 id="diagnostics">Diagnostics</h2>
+  <p><b>Status</b> summarizes client version, user agent, data directory, connections, mempool size, chain height, verification progress, network activity, traffic totals, wallet state, and backend hydration.</p>
+  <p><b>Log</b> shows debug.log lines since this Nu launch in local time. <b>Open Full Log</b> opens the complete <code>debug.log</code> in the operating system's normal viewer. The full debug.log keeps the backend's Litecoin-compatible UTC timestamp format.</p>
+  <p><b>Console</b> runs local RPC commands and keeps command output visible so prior responses can be copied into later commands. Do not paste commands from strangers into Console. RPC commands can change wallet or node state.</p>
+  <p><b>Traffic</b> charts recent received and sent network rates and shows total traffic received and sent. Peaks are diagnostic: a high receive spike often means block or transaction data arrived; a high send spike means this node sent data to peers.</p>
+  <p><b>Peers</b> lists connected peers with Node Id., direction, IP address, port, ping timing, sent and received totals, user agent, magic bytes, protocol version, and service flags. The Magic column is read from the actual P2P packet header selected for that peer, not inferred from user-agent text. <code>fbc0b6db</code> means the peer is still using the legacy Litecoin-compatible Defcoin bytes. <code>defc014e</code> means the peer is using the new Defcoin message bytes. IPv4 addresses use right-aligned octets; IPv6 addresses keep their compressed display form and sort numerically. For inbound TCP connections, the displayed port can be the remote source port used for that session, not necessarily the remote node's listening port.</p>
+  <p>Explicit <code>addnode</code> works when the exact host and port are known. Automatic discovery depends on DNS seeds, fixed seeds, or normal peer address gossip advertising the exact endpoint. A DNS <code>A</code> or <code>AAAA</code> record only gives an address, not a non-default Defcoin port.</p>
+  <p>The <b>Only accept Defcoin-prefixed User Agents</b> setting rejects peers whose advertised user agent does not begin with <code>Defcoin</code>, ignoring case. This improves network hygiene, but it may reduce discovery if older nodes relay useful addresses while identifying themselves with legacy Litecoin-style user agents.</p>
+  <p>Reverse DNS, LAN names, geolocation, and autonomous-system data are best-effort diagnostics, not identity proof.</p>
+
+  <h2 id="settings">Settings</h2>
+  <table>
+    <tr><th>Section</th><th>Purpose</th></tr>
+    <tr><td>Wallet</td><td>Balance masking, wallet backup, and wallet-facing controls.</td></tr>
+    <tr><td>Network</td><td>Connect or isolate P2P networking. The Defcoin user-agent filter accepts peers whose user agent starts with <code>Defcoin</code>. Dual magic mode sends new <code>defc014e</code> message bytes for outbound peers while still accepting legacy <code>fbc0b6db</code> inbound peers during migration. After migration, turn it off to reject legacy message bytes.</td></tr>
+    <tr><td>Display</td><td>Presentation controls such as table column reset behavior and optional third-party transaction explorer URLs. Explorer URLs are off by default.</td></tr>
+    <tr><td>Advanced</td><td>Backend paths and advanced diagnostics only when they are not already shown in Diagnostics.</td></tr>
+    <tr><td>About</td><td>Build summary, copyright, and detailed build/history information when this release includes the manual.</td></tr>
+  </table>
+
+  <h2 id="unsupported">Unsupported Or Compatibility-Limited Features</h2>
+  <p>Defcoin mainnet does not currently treat SegWit, CSV, CLTV, BIP66, Taproot, MWEB, or Signet as active Defcoin mainnet features. Some inherited Litecoin Core code paths still exist because the app is based on Litecoin Core, but the GUI should avoid presenting unsupported Litecoin-only behavior as a Defcoin feature.</p>
+
+  <h2 id="glossary">Glossary</h2>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>DFC</b> The primary Defcoin unit.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Packet</b> 0.001 DFC.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Tock</b> 0.000001 DFC.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Mote</b> 0.00000001 DFC, the smallest displayed unit.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Address</b> A destination string that can receive Defcoin. Treat addresses as exact text; changing one character changes the destination.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Backend</b> The Defcoin node process that validates blocks, stores wallet data, signs transactions, talks to peers, and writes <code>debug.log</code>.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Berkeley DB wallet</b> The legacy <code>wallet.dat</code> database format used by historical Defcoin wallets.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Blockchain</b> The ordered public record of blocks and transactions that full nodes verify.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Confirmation</b> A transaction has one confirmation when it is included in a block. More blocks after that transaction increase its confirmation count.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>FQDN</b> Fully qualified domain name, a complete DNS name for a host.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Full node</b> A node that validates blocks and transactions itself instead of trusting a remote wallet service to do it.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>HD wallet</b> Hierarchical deterministic wallet that derives future keys from wallet seed material.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Latency</b> Network delay measured from peer ping timing. Lower is usually better.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Mempool</b> Transactions your node knows about that are waiting to be mined into a block.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Peer</b> Another node connected to your node.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Private key</b> Secret wallet material that authorizes spending. Never share it.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>PSBT</b> A partially signed transaction package used when creating, reviewing, signing, and broadcasting are separated into multiple steps.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Seed node</b> A DNS host or fixed address used to discover peers when your node starts.</p>
+  <p class="term-entry" style="margin-top:14px; margin-bottom:14px;"><b>Transaction ID</b> The public identifier for a transaction after it is created or broadcast.</p>
+
+  <h2 id="known">Known Issues And Review Notes</h2>
+  <ul>
+    <li>Explicit <code>addnode</code> can connect to known IPv6 or non-default-port peers, but automatic discovery still depends on DNS seeds or peer address gossip advertising that exact address and port.</li>
+    <li>The User Agent filter may reduce address-discovery paths if legacy peers identify as Litecoin-style nodes while still relaying useful Defcoin addresses.</li>
+    <li>Nu's newer part is the Qt Quick interface and packaging model. Public distribution should use Developer ID signing/notarization on macOS and a signed installer on Windows.</li>
+    <li>Location, reverse-DNS, and peer labels are best-effort diagnostics, not consensus or identity proof.</li>
+  </ul>
+
+  <h2 id="sources">Sources</h2>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin reference and operations site</b> <a href="https://defcoin.dc903.org/" title="Open https://defcoin.dc903.org/">https://defcoin.dc903.org/</a><br>History notes: <a href="https://defcoin.dc903.org/history" title="Open https://defcoin.dc903.org/history">https://defcoin.dc903.org/history</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin pool/community mining site</b> <a href="https://defcoin.io/" title="Open https://defcoin.io/">https://defcoin.io/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin community</b> Discord community invite links are best found or requested through the subreddit: <a href="https://www.reddit.com/r/defcoin/" title="Open https://www.reddit.com/r/defcoin/">https://www.reddit.com/r/defcoin/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Bitcoin Core RPC documentation</b> <a href="https://bitcoincore.org/en/doc/" title="Open https://bitcoincore.org/en/doc/">https://bitcoincore.org/en/doc/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Bitcoin Core pruning notes</b> <a href="https://bitcoincore.org/en/releases/0.11.0/" title="Open https://bitcoincore.org/en/releases/0.11.0/">https://bitcoincore.org/en/releases/0.11.0/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>BIP 174: Partially Signed Bitcoin Transaction Format</b> <a href="https://bips.dev/174/" title="Open https://bips.dev/174/">https://bips.dev/174/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>BIP 32: Hierarchical Deterministic Wallets</b> <a href="https://bips.dev/32/" title="Open https://bips.dev/32/">https://bips.dev/32/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>BIP 155: addrv2 message</b> <a href="https://bips.dev/155/" title="Open https://bips.dev/155/">https://bips.dev/155/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Bitcoin Optech PSBT article</b> <a href="https://bitcoinops.org/en/river-descriptors-psbt/" title="Open https://bitcoinops.org/en/river-descriptors-psbt/">https://bitcoinops.org/en/river-descriptors-psbt/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Peer-to-peer</b> Grokipedia article: <a href="https://grokipedia.com/page/Peer-to-peer" title="Open https://grokipedia.com/page/Peer-to-peer">https://grokipedia.com/page/Peer-to-peer</a><br>Wikipedia article: <a href="https://en.wikipedia.org/wiki/Peer-to-peer" title="Open https://en.wikipedia.org/wiki/Peer-to-peer">https://en.wikipedia.org/wiki/Peer-to-peer</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Fully qualified domain name</b> Grokipedia article: <a href="https://grokipedia.com/page/Fully_qualified_domain_name" title="Open https://grokipedia.com/page/Fully_qualified_domain_name">https://grokipedia.com/page/Fully_qualified_domain_name</a><br>Wikipedia article: <a href="https://en.wikipedia.org/wiki/Fully_qualified_domain_name" title="Open https://en.wikipedia.org/wiki/Fully_qualified_domain_name">https://en.wikipedia.org/wiki/Fully_qualified_domain_name</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Latency</b> Grokipedia article: <a href="https://grokipedia.com/page/Latency_(engineering)" title="Open https://grokipedia.com/page/Latency_(engineering)">https://grokipedia.com/page/Latency_(engineering)</a><br>Wikipedia article: <a href="https://en.wikipedia.org/wiki/Latency_(engineering)" title="Open https://en.wikipedia.org/wiki/Latency_(engineering)">https://en.wikipedia.org/wiki/Latency_(engineering)</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Traceroute</b> Grokipedia article: <a href="https://grokipedia.com/page/Traceroute" title="Open https://grokipedia.com/page/Traceroute">https://grokipedia.com/page/Traceroute</a><br>Wikipedia article: <a href="https://en.wikipedia.org/wiki/Traceroute" title="Open https://en.wikipedia.org/wiki/Traceroute">https://en.wikipedia.org/wiki/Traceroute</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Berkeley DB</b> Grokipedia article: <a href="https://grokipedia.com/page/Berkeley_DB" title="Open https://grokipedia.com/page/Berkeley_DB">https://grokipedia.com/page/Berkeley_DB</a><br>Wikipedia article: <a href="https://en.wikipedia.org/wiki/Berkeley_DB" title="Open https://en.wikipedia.org/wiki/Berkeley_DB">https://en.wikipedia.org/wiki/Berkeley_DB</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Scrypt</b> Grokipedia article: <a href="https://grokipedia.com/page/Scrypt" title="Open https://grokipedia.com/page/Scrypt">https://grokipedia.com/page/Scrypt</a><br>Wikipedia article: <a href="https://en.wikipedia.org/wiki/Scrypt" title="Open https://en.wikipedia.org/wiki/Scrypt">https://en.wikipedia.org/wiki/Scrypt</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Blockchain</b> Grokipedia article: <a href="https://grokipedia.com/page/Blockchain" title="Open https://grokipedia.com/page/Blockchain">https://grokipedia.com/page/Blockchain</a><br>Wikipedia article: <a href="https://en.wikipedia.org/wiki/Blockchain" title="Open https://en.wikipedia.org/wiki/Blockchain">https://en.wikipedia.org/wiki/Blockchain</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Design references</b> Nothing Design Skill: <a href="https://github.com/dominikmartn/nothing-design-skill/blob/main/nothing-design/SKILL.md" title="Open https://github.com/dominikmartn/nothing-design-skill/blob/main/nothing-design/SKILL.md">https://github.com/dominikmartn/nothing-design-skill/blob/main/nothing-design/SKILL.md</a><br>Bitcoin Design Guide: <a href="https://bitcoin.design/guide/" title="Open https://bitcoin.design/guide/">https://bitcoin.design/guide/</a><br>Bitcoin Core QML project: <a href="https://github.com/bitcoin-core/gui-qml" title="Open https://github.com/bitcoin-core/gui-qml">https://github.com/bitcoin-core/gui-qml</a></p>
+</body>
+</html>

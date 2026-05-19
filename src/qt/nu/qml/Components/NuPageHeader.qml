@@ -18,18 +18,17 @@ RowLayout {
         Label {
             text: root.title
             color: NuTokens.textPrimary
-            font.pixelSize: 34
-            font.bold: true
+            font.pixelSize: NuTokens.fontTitle
+            font.weight: Font.DemiBold
         }
 
         Label {
             text: root.detail
             color: NuTokens.textSecondary
-            font.pixelSize: 14
+            font.pixelSize: NuTokens.fontSmall
             visible: root.detail.length > 0
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
         }
     }
 }
-

@@ -12,7 +12,7 @@
  * for both bitcoind and bitcoin-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("DefcoinCore");
+const std::string CLIENT_NAME("DefcoinCoreNu");
 
 
 #ifdef HAVE_BUILD_INFO

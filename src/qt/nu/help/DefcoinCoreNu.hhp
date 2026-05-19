@@ -1,0 +1,14 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=DefcoinCoreNu.chm
+Contents file=DefcoinCoreNu.hhc
+Default topic=DefcoinCoreNu.help\Contents\Resources\en.lproj\index.html
+Display compile progress=No
+Full-text search=Yes
+Index file=DefcoinCoreNu.hhk
+Language=0x409 English (United States)
+Title=Defcoin Core Nu Help
+
+[FILES]
+DefcoinCoreNu.help\Contents\Resources\en.lproj\index.html
+DefcoinCoreNu.help\Contents\Resources\en.lproj\details.html

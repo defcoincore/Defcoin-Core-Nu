@@ -9,9 +9,10 @@ Rectangle {
     radius: NuTokens.radiusMedium
     color: NuTokens.panelBase
     border.color: NuTokens.lineSubtle
-    implicitHeight: 44
+    implicitHeight: 50
 
     property string value: ""
+    property bool copyEnabled: value.length > 0
     signal copyRequested(string value)
 
     RowLayout {
@@ -25,12 +26,21 @@ Rectangle {
             elide: Text.ElideMiddle
             color: NuTokens.textPrimary
             font.family: "Menlo"
-            font.pixelSize: 14
+            font.pixelSize: NuTokens.fontBody
         }
 
         Button {
             text: "Copy"
+            enabled: root.copyEnabled
+            activeFocusOnTab: true
+            focusPolicy: Qt.StrongFocus
+            Accessible.role: Accessible.Button
+            Accessible.name: text
+            Accessible.description: root.copyEnabled ? "Copy this value." : "No value is available to copy."
             onClicked: root.copyRequested(root.value)
+            Keys.onReturnPressed: clicked()
+            Keys.onEnterPressed: clicked()
+            Keys.onSpacePressed: clicked()
         }
     }
 }

@@ -1,16 +1,16 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
+import Defcoin.Nu 1.0
 
 import "../Theme"
 import "../Components"
-import "../Bridge"
 
 Rectangle {
     id: root
     radius: NuTokens.radiusMedium
     color: NuTokens.panelBase
     border.color: NuTokens.lineSubtle
-    implicitHeight: 56
+    implicitHeight: 62
 
     RowLayout {
         anchors.fill: parent
@@ -19,30 +19,30 @@ Rectangle {
         spacing: NuTokens.spaceXl
 
         NuStatusDot {
-            label: NuFakeService.networkState === "connected" ? "Network connected" : "Network isolated"
-            stateColor: NuTokens.stateConnected
+            label: NuService.networkState === "connected" ? "Network connected" : "Network isolated"
+            stateColor: NuService.networkState === "connected" ? NuTokens.stateConnected : NuTokens.stateError
         }
 
         NuMetricRow {
             label: "Peers"
-            value: NuFakeService.peerCount
+            value: NuService.peerCount
         }
 
         NuMetricRow {
             label: "Block"
-            value: NuFakeService.blockHeight
+            value: NuService.blockHeight
         }
 
         NuMetricRow {
             label: "Sync"
-            value: NuFakeService.syncState
+            value: NuService.syncState
         }
 
         Item { Layout.fillWidth: true }
 
         NuStatusDot {
-            label: NuFakeService.walletLocked ? "Wallet locked" : "Wallet unlocked"
-            stateColor: NuFakeService.walletLocked ? NuTokens.stateInactive : NuTokens.stateConnected
+            label: NuService.walletLocked ? "Wallet locked" : "Wallet unlocked"
+            stateColor: NuService.walletLocked ? NuTokens.stateInactive : NuTokens.stateConnected
         }
     }
 }

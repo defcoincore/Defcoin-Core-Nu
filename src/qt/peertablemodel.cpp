@@ -1209,11 +1209,11 @@ PeerTableModel::PeerTableModel(interfaces::Node& node, QObject* parent) :
 {
 #if ENABLE_DEFCOIN_FUN_UI
     default_columns << tr("Node ID") << tr("IP Address: Port") << tr("Port") << tr("FQDN") << tr("Domain Alias") << tr("Version") << tr("Svcs") << tr("Avg Ping") << tr("Ping Time") << tr("Jitter") << tr("Traffic Health") << tr("Sent") << tr("Rec'd") << tr("User Agent") << tr("UA Count") << tr("Geo") << tr("City, St")
-                    << tr("Permissions") << tr("Direction") << tr("Starting Block") << tr("Synced Headers") << tr("Synced Blocks") << tr("Connection Time") << tr("Last Send") << tr("Last Receive")
+                    << tr("Permissions") << tr("Direction") << tr("Start Height") << tr("Synced Headers") << tr("Synced Blocks") << tr("Connection Time") << tr("Last Send") << tr("Last Receive")
                     << tr("Ping Wait") << tr("Min. Ping") << tr("Time Offset") << tr("AS Number") << tr("AS Name") << tr("AS Hosting Company") << tr("Seed") << tr("UniqID");
 #else
     default_columns << tr("Node ID") << tr("IP Address: Port") << tr("Port") << tr("FQDN") << tr("Domain Alias") << tr("Version") << tr("Svcs") << tr("Avg Ping") << tr("Ping Time") << tr("Jitter") << tr("Traffic Health") << tr("Sent") << tr("Rec'd") << tr("User Agent") << tr("UA Count") << tr("Geo") << tr("City, St")
-                    << tr("Permissions") << tr("Direction") << tr("Starting Block") << tr("Synced Headers") << tr("Synced Blocks") << tr("Connection Time") << tr("Last Send") << tr("Last Receive")
+                    << tr("Permissions") << tr("Direction") << tr("Start Height") << tr("Synced Headers") << tr("Synced Blocks") << tr("Connection Time") << tr("Last Send") << tr("Last Receive")
                     << tr("Ping Wait") << tr("Min. Ping") << tr("Time Offset") << tr("AS Number") << tr("AS Name") << tr("AS Hosting Company") << tr("Seed");
 #endif
     columns = default_columns;

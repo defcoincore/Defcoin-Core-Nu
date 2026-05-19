@@ -473,6 +473,8 @@ void SetupServerArgs(NodeContext& node)
     argsman.AddArg("-seednode=<ip>", "Connect to a node to retrieve peer addresses, and disconnect. This option can be specified multiple times to connect to multiple nodes.", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-networkactive", "Enable all P2P network activity (default: 1). Can be changed by the setnetworkactive RPC command", ArgsManager::ALLOW_BOOL, OptionsCategory::CONNECTION);
     argsman.AddArg("-onlydefcoinua", strprintf("Only accept peers whose advertised user agent starts with Defcoin, ignoring case (default: %u)", DEFAULT_DEFCOIN_USER_AGENT_FILTER), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
+    argsman.AddArg("-acceptlegacymagic", strprintf("Temporarily accept legacy Litecoin-compatible Defcoin P2P message-start bytes during the Defcoin magic migration (default: %u)", DEFAULT_ACCEPT_LEGACY_MAGIC), ArgsManager::ALLOW_BOOL, OptionsCategory::CONNECTION);
+    argsman.AddArg("-allowlannodediscovery", strprintf("Allow learning local/private LAN peer addresses from peer address relay (default: %u). Manually configured and inbound LAN peers are not blocked by this setting.", DEFAULT_ALLOW_LAN_NODE_DISCOVERY), ArgsManager::ALLOW_BOOL, OptionsCategory::CONNECTION);
     argsman.AddArg("-timeout=<n>", strprintf("Specify connection timeout in milliseconds (minimum: 1, default: %d)", DEFAULT_CONNECT_TIMEOUT), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-peertimeout=<n>", strprintf("Specify p2p connection timeout in seconds. This option determines the amount of time a peer may be inactive before the connection to it is dropped. (minimum: 1, default: %d)", DEFAULT_PEER_CONNECT_TIMEOUT), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::CONNECTION);
     argsman.AddArg("-torcontrol=<ip>:<port>", strprintf("Tor control port to use if onion listening enabled (default: %s)", DEFAULT_TOR_CONTROL), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
@@ -600,7 +602,7 @@ void SetupServerArgs(NodeContext& node)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/turnkit/defcoin-core>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/DefcoinCore/Defcoin-Core-Nu>";
 
     return strprintf(_("Copyright (C) %i-%i The Defcoin Core developers").translated, 2014, COPYRIGHT_YEAR) + "\n" +
            strprintf(_("Copyright (C) %i-%i The Litecoin Core developers").translated, 2011, COPYRIGHT_YEAR) + "\n" +
@@ -614,7 +616,7 @@ std::string LicenseInfo()
                URL_SOURCE_CODE) +
            "\n" +
            "\n" +
-           _("This is experimental software.").translated + "\n" +
+           _("This software is provided without warranty.").translated + "\n" +
            strprintf(_("Distributed under the MIT software license, see the accompanying file %s or %s").translated, "COPYING", "<https://opensource.org/licenses/MIT>") +
            "\n";
 }
@@ -1307,6 +1309,8 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
     LogPrintf("Using data directory %s\n", GetDataDir().string());
     SetOnlyDefcoinUserAgents(args.GetBoolArg("-onlydefcoinua", DEFAULT_DEFCOIN_USER_AGENT_FILTER));
+    SetAcceptLegacyMagic(args.GetBoolArg("-acceptlegacymagic", DEFAULT_ACCEPT_LEGACY_MAGIC));
+    SetAllowLanNodeDiscovery(args.GetBoolArg("-allowlannodediscovery", DEFAULT_ALLOW_LAN_NODE_DISCOVERY));
 
     // Only log conf file usage message if conf file actually exists.
     fs::path config_file_path = GetConfigFile(args.GetArg("-conf", BITCOIN_CONF_FILENAME));

@@ -199,6 +199,22 @@ BOOST_AUTO_TEST_CASE(addrman_ports)
     BOOST_CHECK_EQUAL(addr_ret3.ToString(), "250.1.1.1:8333");
 }
 
+BOOST_AUTO_TEST_CASE(addrman_replace_same_ip_port)
+{
+    CAddrManTest addrman;
+
+    const CNetAddr source = ResolveIP("252.2.2.2");
+    const CAddress litecoin_port(ResolveService("250.1.1.2", 9333), NODE_NETWORK);
+    const CAddress defcoin_port(ResolveService("250.1.1.2", 1337), NODE_NETWORK);
+
+    BOOST_CHECK(addrman.Add(litecoin_port, source));
+    BOOST_CHECK_EQUAL(addrman.size(), 1U);
+    BOOST_CHECK(addrman.AddReplacingSameIP(defcoin_port, source));
+    BOOST_CHECK_EQUAL(addrman.size(), 1U);
+
+    CAddrInfo addr_ret = addrman.Select(/* newOnly */ true);
+    BOOST_CHECK_EQUAL(addr_ret.ToString(), "250.1.1.2:1337");
+}
 
 BOOST_AUTO_TEST_CASE(addrman_select)
 {

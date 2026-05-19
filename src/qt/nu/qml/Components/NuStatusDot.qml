@@ -22,6 +22,6 @@ RowLayout {
     Label {
         text: root.label
         color: NuTokens.textPrimary
-        font.pixelSize: 14
+        font.pixelSize: NuTokens.fontBody
     }
 }

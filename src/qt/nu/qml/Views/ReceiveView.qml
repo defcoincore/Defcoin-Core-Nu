@@ -1,56 +1,242 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import Defcoin.Nu 1.0
 
 import "../Theme"
 import "../Components"
-import "../Bridge"
 
 ColumnLayout {
+    id: root
     spacing: NuTokens.spaceLg
+    property var currentRequest: ({})
+
+    function openRequestDetails(row) {
+        currentRequest = row && row.meta ? row.meta : ({})
+        requestDetailsDialog.open()
+    }
 
     NuPageHeader {
         Layout.fillWidth: true
         title: "Receive"
-        detail: "Generate requests, copy addresses, and keep payment details readable before sharing."
+        detail: "Create payment requests with a real address and QR payload."
     }
 
     NuPanel {
         Layout.fillWidth: true
-        implicitHeight: 300
+        implicitHeight: 320
 
         RowLayout {
             anchors.fill: parent
             spacing: NuTokens.spaceXl
 
             Rectangle {
-                Layout.preferredWidth: 180
-                Layout.preferredHeight: 180
+                Layout.preferredWidth: 240
+                Layout.preferredHeight: 240
                 color: "#ffffff"
                 border.color: NuTokens.lineStrong
+                radius: NuTokens.radiusSmall
                 Image {
                     anchors.centerIn: parent
-                    width: 96
-                    height: 96
-                    source: "../../assets/icons/qr.svg"
+                    width: 216
+                    height: 216
+                    visible: NuService.receiveQrSource.length > 0
+                    source: NuService.receiveQrSource
+                    fillMode: Image.PreserveAspectFit
+                }
+                Label {
+                    anchors.centerIn: parent
+                    width: parent.width - 36
+                    visible: NuService.receiveQrSource.length === 0
+                    text: "QR appears after address generation"
+                    color: NuTokens.textSecondary
+                    font.pixelSize: NuTokens.fontSmall
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                Label { text: "Payment address"; color: NuTokens.textSecondary; font.pixelSize: NuTokens.fontBody }
+                NuCopyField {
+                    Layout.fillWidth: true
+                    value: NuService.receiveAddress.length > 0 ? NuService.receiveAddress : "Generate a request to create a receiving address."
+                    copyEnabled: NuService.receiveAddress.length > 0
+                    onCopyRequested: (value) => NuService.copyText(value)
+                }
+                Label {
+                    Layout.fillWidth: true
+                    text: "Request details are encoded into the QR URI when supplied. They remain wallet metadata and are not written to the blockchain."
+                    color: NuTokens.textSecondary
+                    font.pixelSize: NuTokens.fontSmall
+                    wrapMode: Text.WordWrap
+                }
+                NuActionButton {
+                    text: "Generate request"
+                    primary: true
+                    Layout.preferredWidth: 220
+                    helpText: "Create a new receiving address and optional payment URI."
+                    onClicked: requestDialog.open()
+                }
+            }
+        }
+    }
+
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: NuTokens.spaceMd
+
+        Label {
+            Layout.fillWidth: true
+            text: "Generated requests"
+            color: NuTokens.textSecondary
+            font.pixelSize: NuTokens.fontBody
+        }
+
+        NuActionButton {
+            text: receiveRequestsTable.selectedRowKeys.length > 0
+                  ? "Delete selected (" + receiveRequestsTable.selectedRowKeys.length + ")"
+                  : "Delete selected"
+            Layout.preferredWidth: 190
+            enabled: receiveRequestsTable.selectedRowKeys.length > 0
+            opacity: enabled ? 1.0 : 0.55
+            helpText: "Delete selected generated requests."
+            onClicked: {
+                NuService.deleteReceiveRequests(receiveRequestsTable.selectedRowKeys)
+                receiveRequestsTable.clearRowSelection()
+                requestDetailsDialog.close()
+            }
+        }
+    }
+
+    NuDataTable {
+        id: receiveRequestsTable
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        tableId: "receiveRequests"
+        columns: ["", "", "Date", "Label", "Address", "Amount"]
+        columnTypes: ["action", "delete", "date", "text", "address", "amount"]
+        columnWeights: [0.1, 0.1, 1.0, 1.2, 3.5, 1.0]
+        columnMinimums: [44, 44, 150, 140, 260, 130]
+        columnMaximums: [44, 44, 180, 360, 620, 180]
+        rowSelectionEnabled: true
+        rowKeyMetaField: "address"
+        rows: NuService.receiveRequests
+        emptyText: "Requested payments will appear here."
+        onRowActivated: (row) => root.openRequestDetails(row)
+        onRowDeleteRequested: (row) => {
+            const meta = row && row.meta ? row.meta : ({})
+            NuService.deleteReceiveRequest(meta.address || "")
+            requestDetailsDialog.close()
+        }
+    }
+
+    NuDialog {
+        id: requestDialog
+        title: "Generate payment request"
+        acceptText: "Generate"
+        dialogWidth: 620
+
+        GridLayout {
+            Layout.fillWidth: true
+            columns: 2
+            rowSpacing: NuTokens.spaceMd
+            columnSpacing: NuTokens.spaceLg
+
+            Label { text: "Label"; color: NuTokens.textSecondary; font.pixelSize: NuTokens.fontBody }
+            NuTextField { id: labelField; Layout.fillWidth: true; placeholderText: "Optional label" }
+
+            Label { text: "Amount"; color: NuTokens.textSecondary; font.pixelSize: NuTokens.fontBody }
+            NuTextField { id: amountField; Layout.fillWidth: true; placeholderText: "Optional amount in DFC" }
+
+            Label { text: "Message"; color: NuTokens.textSecondary; font.pixelSize: NuTokens.fontBody }
+            NuTextField { id: messageField; Layout.fillWidth: true; placeholderText: "Optional message" }
+        }
+
+        onAccepted: NuService.requestNewAddress(labelField.text, amountField.text, messageField.text)
+    }
+
+    NuDialog {
+        id: requestDetailsDialog
+        title: "Payment request"
+        showCancel: false
+        acceptText: "Close"
+        dialogWidth: 720
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: NuTokens.spaceLg
+
+            Rectangle {
+                Layout.preferredWidth: 220
+                Layout.preferredHeight: 220
+                color: "#ffffff"
+                border.color: NuTokens.lineStrong
+                radius: NuTokens.radiusSmall
+                Image {
+                    anchors.centerIn: parent
+                    width: 198
+                    height: 198
+                    source: root.currentRequest.qrSource || NuService.receiveRequestQrSource(root.currentRequest.uri || "")
                     fillMode: Image.PreserveAspectFit
                 }
             }
 
             ColumnLayout {
                 Layout.fillWidth: true
-                Label { text: "Payment address"; color: NuTokens.textSecondary }
-                NuCopyField { Layout.fillWidth: true; value: NuFakeService.receiveAddress }
-                NuActionButton { text: "Generate new request"; primary: true; Layout.preferredWidth: 220 }
+                spacing: NuTokens.spaceSm
+
+                TextArea {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 170
+                    readOnly: true
+                    selectByMouse: true
+                    wrapMode: TextEdit.WrapAnywhere
+                    text: "Address: " + (root.currentRequest.address || "")
+                          + "\nLabel: " + (root.currentRequest.label || "")
+                          + "\nAmount: " + (root.currentRequest.amount || "")
+                          + "\nMessage: " + (root.currentRequest.message || "")
+                          + "\nURI: " + (root.currentRequest.uri || "")
+                    color: NuTokens.textPrimary
+                    selectedTextColor: NuTokens.textInverse
+                    selectionColor: NuTokens.lineStrong
+                    font.family: NuTokens.monoFont
+                    font.pixelSize: NuTokens.fontSmall
+                    background: Rectangle { color: NuTokens.backgroundBase; border.color: NuTokens.lineSubtle; radius: NuTokens.radiusSmall }
+                }
+
+                TextArea {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 72
+                    visible: NuService.explorerUrlForAddress(root.currentRequest.address || "").length > 0
+                    readOnly: true
+                    selectByMouse: true
+                    textFormat: TextEdit.RichText
+                    wrapMode: TextEdit.WordWrap
+                    text: "Explorer: <a href=\"" + NuService.explorerUrlForAddress(root.currentRequest.address || "") + "\">"
+                          + NuService.explorerUrlForAddress(root.currentRequest.address || "") + "</a>"
+                    color: NuTokens.textPrimary
+                    onLinkActivated: Qt.openUrlExternally(link)
+                    background: Rectangle { color: NuTokens.backgroundBase; border.color: NuTokens.lineSubtle; radius: NuTokens.radiusSmall }
+                }
             }
         }
-    }
 
-    NuDataTable {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        columns: ["Date", "Label", "Address", "Amount"]
-        rows: [["05/12/26", "test", NuFakeService.receiveAddress, "1.00000000 DFC"]]
-        emptyText: "Requested payments will appear here."
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: NuTokens.spaceSm
+            NuActionButton {
+                text: "Copy URI"
+                Layout.preferredWidth: 120
+                onClicked: NuService.copyText(root.currentRequest.uri || "")
+            }
+            NuActionButton {
+                text: "Copy address"
+                Layout.preferredWidth: 150
+                onClicked: NuService.copyText(root.currentRequest.address || "")
+            }
+            Item { Layout.fillWidth: true }
+        }
     }
 }

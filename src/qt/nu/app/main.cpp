@@ -1,11 +1,214 @@
+#include "NuRpcService.h"
+
 #include <QApplication>
+#include <QColor>
+#include <QFile>
 #include <QFont>
+#include <QHash>
+#include <QIcon>
+#include <QImage>
+#include <QIODevice>
+#include <QLinearGradient>
+#include <QPainter>
+#include <QPixmap>
+#include <QGuiApplication>
+#include <QMetaObject>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QtQml/qqml.h>
 #include <QQuickStyle>
 #include <QDir>
+#include <QDebug>
 #include <QQuickWindow>
+#include <QScreen>
+#include <QSplashScreen>
+#include <QStyleHints>
 #include <QTimer>
 #include <QUrl>
+#include <QWidget>
+#include <QWindow>
+
+#if defined(Q_OS_WIN)
+#include <windows.h>
+#endif
+
+namespace {
+constexpr bool kNuHelpEnabled = DEFCOIN_NU_HELP_ENABLED != 0;
+
+QHash<QString, QString> readBuildInfoProperties(const QString& resourceRoot)
+{
+    QHash<QString, QString> values;
+    QFile file(QDir(resourceRoot).filePath(QStringLiteral("BUILD_INFO.properties")));
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return values;
+    }
+    while (!file.atEnd()) {
+        const QString line = QString::fromUtf8(file.readLine()).trimmed();
+        if (line.isEmpty() || line.startsWith(QLatin1Char('#'))) {
+            continue;
+        }
+        const int equals = line.indexOf(QLatin1Char('='));
+        if (equals <= 0) {
+            continue;
+        }
+        values.insert(line.left(equals).trimmed(), line.mid(equals + 1).trimmed());
+    }
+    return values;
+}
+
+void drawNuBrandSplash(QPixmap& pixmap, const QString& resourceRoot)
+{
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    painter.setRenderHint(QPainter::TextAntialiasing, true);
+
+    const QRect panel(0, 0, pixmap.width(), pixmap.height());
+    QLinearGradient panelGradient(panel.topLeft(), panel.bottomLeft());
+    panelGradient.setColorAt(0.0, QColor("#0e0418"));
+    panelGradient.setColorAt(0.34, QColor("#08030f"));
+    panelGradient.setColorAt(1.0, QColor("#05080a"));
+    painter.fillRect(panel, panelGradient);
+
+    painter.setPen(QColor(84, 42, 132, 40));
+    for (int y = panel.top(); y < panel.bottom(); y += 12) {
+        painter.drawLine(panel.left(), y, panel.right(), y);
+    }
+    painter.setPen(QColor(246, 246, 242, 7));
+    for (int x = panel.left(); x < panel.right(); x += 12) {
+        painter.drawLine(x, panel.top(), x, panel.bottom());
+    }
+
+    const QPixmap coinStack(resourceRoot + "/assets/brand/defcoin-nu-coin-stack-hires.png");
+    const QRect logoCoinRect(112, 48, 216, 305);
+    if (!coinStack.isNull()) {
+        painter.setOpacity(0.96);
+        painter.drawPixmap(logoCoinRect, coinStack);
+        painter.setOpacity(1.0);
+    }
+
+    QFont brandFont(QStringLiteral("Avenir Next Condensed"));
+    brandFont.setPixelSize(58);
+    brandFont.setWeight(QFont::ExtraBold);
+    brandFont.setLetterSpacing(QFont::AbsoluteSpacing, 1.15);
+    painter.setFont(brandFont);
+    painter.setPen(QColor("#f6f6f2"));
+
+    const int wordX = logoCoinRect.right() + 30;
+    const int wordY = logoCoinRect.top() + 78;
+    const int wordW = panel.right() - wordX - 44;
+    QFontMetrics brandMetrics(brandFont);
+    painter.drawText(QRect(wordX, wordY, wordW, 66), Qt::AlignLeft | Qt::AlignVCenter, QStringLiteral("DEF"));
+    painter.drawText(QRect(wordX + brandMetrics.horizontalAdvance(QStringLiteral("DEF")) + 2, wordY, wordW, 66), Qt::AlignLeft | Qt::AlignVCenter, QStringLiteral("COIN"));
+    painter.drawText(QRect(wordX, wordY + 50, wordW, 66), Qt::AlignLeft | Qt::AlignVCenter, QStringLiteral("CORE NU"));
+}
+
+#if defined(Q_OS_WIN)
+void holdTopmostBriefly(QWidget* context, HWND hwnd)
+{
+    if (!context || !hwnd) return;
+    SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    QTimer::singleShot(2200, context, [context] {
+        HWND current_hwnd = reinterpret_cast<HWND>(context->winId());
+        if (!current_hwnd) return;
+        SetWindowPos(current_hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+        BringWindowToTop(current_hwnd);
+        SetForegroundWindow(current_hwnd);
+    });
+}
+
+void holdTopmostBriefly(QWindow* context, HWND hwnd)
+{
+    if (!context || !hwnd) return;
+    SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    QTimer::singleShot(2200, context, [context] {
+        HWND current_hwnd = reinterpret_cast<HWND>(context->winId());
+        if (!current_hwnd) return;
+        SetWindowPos(current_hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+        BringWindowToTop(current_hwnd);
+        SetForegroundWindow(current_hwnd);
+        context->raise();
+        context->requestActivate();
+    });
+}
+#endif
+
+void activateWindowForUser(QQuickWindow* window)
+{
+    if (!window) return;
+    if (QScreen* screen = QGuiApplication::primaryScreen()) {
+        window->setScreen(screen);
+        const QRect available = screen->availableGeometry();
+        QRect geometry = window->geometry();
+        if (geometry.width() <= 0 || geometry.height() <= 0) {
+            geometry.setSize(QSize(1280, 820));
+        }
+        if (!available.intersects(geometry)) {
+            const int x = available.x() + qMax(0, (available.width() - geometry.width()) / 2);
+            const int y = available.y() + qMax(0, (available.height() - geometry.height()) / 2);
+            window->setPosition(x, y);
+        }
+    }
+    window->setVisibility(QWindow::Windowed);
+    window->showNormal();
+    if (window->windowState() == Qt::WindowMinimized) {
+        window->setWindowState(Qt::WindowNoState);
+    }
+    window->raise();
+    window->requestActivate();
+#if defined(Q_OS_WIN)
+    HWND hwnd = reinterpret_cast<HWND>(window->winId());
+    if (hwnd) {
+        const DWORD foreground_thread = GetWindowThreadProcessId(GetForegroundWindow(), nullptr);
+        const DWORD current_thread = GetCurrentThreadId();
+        if (foreground_thread != 0 && foreground_thread != current_thread) {
+            AttachThreadInput(current_thread, foreground_thread, TRUE);
+        }
+        AllowSetForegroundWindow(ASFW_ANY);
+        ShowWindow(hwnd, SW_RESTORE);
+        BringWindowToTop(hwnd);
+        SetForegroundWindow(hwnd);
+        holdTopmostBriefly(window, hwnd);
+        if (foreground_thread != 0 && foreground_thread != current_thread) {
+            AttachThreadInput(current_thread, foreground_thread, FALSE);
+        }
+    }
+#endif
+}
+
+void activateTopLevelWindowsForUser()
+{
+    for (QWindow* window : QGuiApplication::topLevelWindows()) {
+        if (!window || !window->isVisible()) continue;
+        if (auto* quickWindow = qobject_cast<QQuickWindow*>(window)) {
+            activateWindowForUser(quickWindow);
+            continue;
+        }
+        window->setVisibility(QWindow::Windowed);
+        window->showNormal();
+        window->raise();
+        window->requestActivate();
+    }
+}
+
+void activateSplashForUser(QSplashScreen* splash)
+{
+    if (!splash) return;
+    splash->show();
+    splash->raise();
+    splash->activateWindow();
+#if defined(Q_OS_WIN)
+    HWND hwnd = reinterpret_cast<HWND>(splash->winId());
+    if (hwnd) {
+        AllowSetForegroundWindow(ASFW_ANY);
+        ShowWindow(hwnd, SW_RESTORE);
+        BringWindowToTop(hwnd);
+        SetForegroundWindow(hwnd);
+        holdTopmostBriefly(splash, hwnd);
+    }
+#endif
+}
+}
 
 int main(int argc, char* argv[])
 {
@@ -14,12 +217,77 @@ int main(int argc, char* argv[])
     QApplication::setApplicationDisplayName("Defcoin Core Nu");
     QApplication::setOrganizationName("Defcoin Core");
     QApplication::setOrganizationDomain("defcoincore.org");
-    QApplication::setFont(QFont("Helvetica Neue"));
+    QApplication::setFont(QFont(QStringLiteral("Arial")));
+    QGuiApplication::styleHints()->setTabFocusBehavior(Qt::TabFocusAllControls);
 
     QQuickStyle::setStyle("Basic");
 
+#ifdef Q_OS_MACOS
+    const QString appDir = QCoreApplication::applicationDirPath();
+    const QString pluginDir = QDir(appDir).filePath("../PlugIns");
+    if (QDir(pluginDir).exists()) QCoreApplication::setLibraryPaths({pluginDir});
+    const QString resourceRoot = QDir(appDir).filePath("../Resources/nu");
+    const QString deployedQmlRoot = QDir(appDir).filePath("../Resources/qml");
+#else
+    const QString appDir = QCoreApplication::applicationDirPath();
+    const QString pluginDir = QDir(appDir).filePath("plugins");
+    if (QDir(pluginDir).exists()) QCoreApplication::setLibraryPaths({pluginDir});
+    const QString resourceRoot = QDir(appDir).filePath("nu");
+    const QString deployedQmlRoot = QDir(appDir).filePath("qml");
+#endif
+    QIcon appIcon;
+    appIcon.addFile(resourceRoot + "/assets/brand/defcoin-nu-icon-1024.png", QSize(256, 256));
+    appIcon.addFile(resourceRoot + "/assets/brand/defcoin-nu-icon-1024.png", QSize(1024, 1024));
+    appIcon.addFile(resourceRoot + "/assets/brand/DefcoinCoreNu.ico");
+    QApplication::setWindowIcon(appIcon);
+
+    const QStringList arguments = app.arguments();
+    const bool forceRaise = arguments.contains(QStringLiteral("--raise"));
+    const QHash<QString, QString> buildInfo = readBuildInfoProperties(resourceRoot);
+    const QString buildId = buildInfo.value(QStringLiteral("build_id"));
+    const QString buildTimestamp = buildInfo.value(QStringLiteral("build_timestamp_utc"));
+    const QString gitCommit = buildInfo.value(QStringLiteral("git_commit"));
+    QSplashScreen* splash = nullptr;
+    {
+        QPixmap displaySplash(720, 405);
+        displaySplash.fill(QColor("#05080a"));
+        drawNuBrandSplash(displaySplash, resourceRoot);
+        const QString splashText = QStringLiteral(
+            "Defcoin Core Nu v%1 • Core Memories • Backend: Litecoin Core v0.21.5.5 + Defcoin parameters\n"
+            "© 2014-2026 Defcoin Core developers • © 2011-2026 Litecoin Core developers • © 2009-2026 Bitcoin Core developers")
+            .arg(QStringLiteral(DEFCOIN_NU_VERSION));
+        QPainter painter(&displaySplash);
+        painter.setRenderHint(QPainter::TextAntialiasing, true);
+        const QRect textRect(18, displaySplash.height() - 60, displaySplash.width() - 36, 50);
+        painter.fillRect(QRect(0, displaySplash.height() - 74, displaySplash.width(), 74), QColor(5, 8, 10, 222));
+        QFont splashFont = QApplication::font();
+        splashFont.setPixelSize(11);
+        painter.setFont(splashFont);
+        painter.setPen(QColor("#f6f6f2"));
+        painter.drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap, splashText);
+        painter.end();
+
+        splash = new QSplashScreen(displaySplash);
+        if (forceRaise) {
+            splash->setWindowFlag(Qt::WindowStaysOnTopHint, true);
+        }
+        activateSplashForUser(splash);
+        app.processEvents();
+        if (forceRaise) {
+            QTimer::singleShot(250, splash, [splash] { activateSplashForUser(splash); });
+        }
+    }
+
+    NuRpcService service;
+    qmlRegisterSingletonInstance("Defcoin.Nu", 1, 0, "NuService", &service);
+
     QQmlApplicationEngine engine;
-    const QString resourceRoot = QDir(QCoreApplication::applicationDirPath()).filePath("../Resources/nu");
+    engine.rootContext()->setContextProperty(QStringLiteral("NuBuildVersion"), QStringLiteral(DEFCOIN_NU_VERSION));
+    engine.rootContext()->setContextProperty(QStringLiteral("NuBuildId"), buildId);
+    engine.rootContext()->setContextProperty(QStringLiteral("NuBuildTimestamp"), buildTimestamp);
+    engine.rootContext()->setContextProperty(QStringLiteral("NuGitCommit"), gitCommit);
+    engine.rootContext()->setContextProperty(QStringLiteral("NuHelpEnabled"), kNuHelpEnabled);
+    if (QDir(deployedQmlRoot).exists()) engine.addImportPath(deployedQmlRoot);
     engine.addImportPath(resourceRoot + "/qml");
     engine.addImportPath(resourceRoot);
 
@@ -29,15 +297,122 @@ int main(int argc, char* argv[])
     }, Qt::QueuedConnection);
     engine.load(mainUrl);
 
+    QQuickWindow* rootWindow = nullptr;
     if (!engine.rootObjects().isEmpty()) {
-        if (auto* window = qobject_cast<QQuickWindow*>(engine.rootObjects().constFirst())) {
-            window->show();
-            window->raise();
-            window->requestActivate();
+        QObject* rootObject = engine.rootObjects().constFirst();
+        const int routeIndex = arguments.indexOf("--route");
+        if (routeIndex >= 0 && routeIndex + 1 < arguments.size()) {
+            rootObject->setProperty("currentRoute", arguments.at(routeIndex + 1));
+        }
+        const int nodeTabIndex = arguments.indexOf("--node-tab");
+        if (nodeTabIndex >= 0 && nodeTabIndex + 1 < arguments.size()) {
+            rootObject->setProperty("nodeInitialTab", arguments.at(nodeTabIndex + 1).toInt());
+        }
+        const int peerViewIndex = arguments.indexOf("--peer-view");
+        if (peerViewIndex >= 0 && peerViewIndex + 1 < arguments.size()) {
+            const QString peerView = arguments.at(peerViewIndex + 1).toLower();
+            rootObject->setProperty("peerInitialView", peerView == QLatin1String("detailed") ? 1 : peerView.toInt());
+        }
+        rootObject->setProperty("visible", true);
+        QMetaObject::invokeMethod(rootObject, "show");
+        QMetaObject::invokeMethod(rootObject, "raise");
+        QMetaObject::invokeMethod(rootObject, "requestActivate");
+        if (forceRaise) {
+            QTimer::singleShot(300, rootObject, [rootObject] {
+                rootObject->setProperty("visible", true);
+                QMetaObject::invokeMethod(rootObject, "show");
+                QMetaObject::invokeMethod(rootObject, "raise");
+                QMetaObject::invokeMethod(rootObject, "requestActivate");
+            });
+            QTimer::singleShot(1500, rootObject, [rootObject] {
+                rootObject->setProperty("visible", true);
+                QMetaObject::invokeMethod(rootObject, "show");
+                QMetaObject::invokeMethod(rootObject, "raise");
+                QMetaObject::invokeMethod(rootObject, "requestActivate");
+            });
+        }
+        if (auto* window = qobject_cast<QQuickWindow*>(rootObject)) {
+            rootWindow = window;
+            rootWindow->setIcon(appIcon);
+            activateWindowForUser(rootWindow);
+            if (forceRaise) {
+                QTimer::singleShot(300, rootWindow, [rootWindow] { activateWindowForUser(rootWindow); });
+                QTimer::singleShot(900, rootWindow, [rootWindow] { activateWindowForUser(rootWindow); });
+                QTimer::singleShot(1800, rootWindow, [rootWindow] { activateWindowForUser(rootWindow); });
+            }
+            if (arguments.contains(QStringLiteral("--open-about"))) {
+                QTimer::singleShot(250, rootObject, [rootObject] {
+                    QMetaObject::invokeMethod(rootObject, "openAboutSummary");
+                });
+            }
+            if (kNuHelpEnabled && arguments.contains(QStringLiteral("--open-help"))) {
+                QTimer::singleShot(250, rootObject, [rootObject] {
+                    QMetaObject::invokeMethod(rootObject, "openHelpManual");
+                });
+            }
+            if (kNuHelpEnabled && arguments.contains(QStringLiteral("--open-details"))) {
+                QTimer::singleShot(250, rootObject, [rootObject] {
+                    QMetaObject::invokeMethod(rootObject, "openDetailedAbout");
+                });
+            }
+            if (splash) {
+                QTimer::singleShot(650, splash, &QSplashScreen::close);
+                QTimer::singleShot(900, splash, &QObject::deleteLater);
+            }
+        }
+        if (splash) {
+            QTimer::singleShot(650, splash, &QSplashScreen::close);
+            QTimer::singleShot(900, splash, &QObject::deleteLater);
         }
     }
 
-    if (app.arguments().contains("--smoke-test")) {
+    if (!rootWindow) {
+        for (QWindow* window : QGuiApplication::topLevelWindows()) {
+            auto* quickWindow = qobject_cast<QQuickWindow*>(window);
+            if (!quickWindow) continue;
+            rootWindow = quickWindow;
+            rootWindow->setIcon(appIcon);
+            activateWindowForUser(rootWindow);
+            if (splash) {
+                QTimer::singleShot(650, splash, &QSplashScreen::close);
+                QTimer::singleShot(900, splash, &QObject::deleteLater);
+            }
+            break;
+        }
+    }
+
+    if (forceRaise) {
+        QTimer::singleShot(1200, &app, [] { activateTopLevelWindowsForUser(); });
+        QTimer::singleShot(2400, &app, [] { activateTopLevelWindowsForUser(); });
+        QTimer::singleShot(4200, &app, [] { activateTopLevelWindowsForUser(); });
+    }
+
+    const int grabIndex = arguments.indexOf("--grab-screenshot");
+    if (grabIndex >= 0 && grabIndex + 1 < arguments.size()) {
+        const QString outputPath = arguments.at(grabIndex + 1);
+        int grabDelayMs = 1200;
+        const int delayIndex = arguments.indexOf("--grab-delay-ms");
+        if (delayIndex >= 0 && delayIndex + 1 < arguments.size()) {
+            bool ok = false;
+            const int parsed = arguments.at(delayIndex + 1).toInt(&ok);
+            if (ok) grabDelayMs = qBound(250, parsed, 30000);
+        }
+        QTimer::singleShot(grabDelayMs, &app, [rootWindow, outputPath] {
+            QQuickWindow* targetWindow = rootWindow;
+            for (QWindow* window : QGuiApplication::topLevelWindows()) {
+                auto* quickWindow = qobject_cast<QQuickWindow*>(window);
+                if (quickWindow && quickWindow->isVisible() && quickWindow != rootWindow) {
+                    targetWindow = quickWindow;
+                }
+            }
+            if (targetWindow) {
+                targetWindow->grabWindow().save(outputPath);
+            }
+            QCoreApplication::quit();
+        });
+    }
+
+    if (app.arguments().contains("--smoke-test") && grabIndex < 0) {
         QTimer::singleShot(1000, &app, &QCoreApplication::quit);
     }
 

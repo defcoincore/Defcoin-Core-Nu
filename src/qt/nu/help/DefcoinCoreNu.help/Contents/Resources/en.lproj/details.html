@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="AppleTitle" content="About Defcoin Core Nu">
+  <meta name="keywords" content="Defcoin Core Nu, About, Litecoin Core backend, Defcoin history, Core Memories, Bitcoin Design Guide, Nothing design">
+  <title>About Defcoin Core Nu</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body {
+      font: 15px/1.58 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0 auto;
+      max-width: 920px;
+      padding: 32px 36px 48px;
+      color: #111;
+      background: #f8f8f5;
+    }
+    h1, h2 { line-height: 1.18; letter-spacing: 0; }
+    h1 { font-size: 2rem; margin: 0 0 .35rem; }
+    h2 { font-size: 1.25rem; margin: 2rem 0 .7rem; padding-top: 1rem; border-top: 1px solid #d8d8d1; }
+    a { color: #1267b1; }
+    p { margin-top: .55rem; margin-bottom: 1rem; }
+    li { margin: .38rem 0; }
+    li + li { margin-top: .48rem; }
+    .lede { font-size: 1.05rem; }
+    .source-entry { margin: 1rem 0; padding-top: .3rem; }
+    .source-entry b { display: inline-block; min-width: 12rem; }
+    @media (prefers-color-scheme: dark) {
+      body { color: #f4f4f0; background: #101214; }
+      h2 { border-color: #39424b; }
+      a { color: #74b9ff; }
+    }
+  </style>
+</head>
+<body style="color:#111111; background:#f8f8f5;">
+  <a name="details"></a>
+  <h1>About Defcoin Core Nu</h1>
+  <p class="lede" style="margin-top:10px; margin-bottom:18px;"><b>Defcoin Core Nu</b> is the <b>Core Memories</b> release. It keeps a Litecoin Core v0.21.5.5-derived backend with Defcoin consensus and network parameters while presenting a new Qt Quick desktop interface. Verify recipients, amounts, and backups carefully before use.</p>
+
+  <h2 style="margin-top:28px; padding-top:16px;">Copyright</h2>
+  <p style="margin-top:10px; margin-bottom:18px;">© 2014-2026 The Defcoin Core developers.<br>
+  © 2011-2026 The Litecoin Core developers.<br>
+  © 2009-2026 The Bitcoin Core developers.</p>
+
+  <h2 style="margin-top:28px; padding-top:16px;">Architecture</h2>
+  <p style="margin-top:10px; margin-bottom:18px;">Nu keeps private keys, wallet storage, transaction signing, block validation, peer networking, and RPC in the Defcoin backend. The Nu interface is a Qt Quick frontend that talks to the backend through local RPC and does not reimplement consensus logic.</p>
+  <p style="margin-top:10px; margin-bottom:18px;">The backend is based on Litecoin Core v0.21.5.5 so the project can inherit a maintained full-node foundation, modern build fixes, and mature wallet/node behavior. Defcoin-specific consensus and network parameters are preserved.</p>
+
+  <h2 style="margin-top:28px; padding-top:16px;">Litecoin Core Features Not Active In Defcoin</h2>
+  <ul>
+    <li>BIP65/CLTV</li>
+    <li>BIP66 strict DER signatures</li>
+    <li>CSV</li>
+    <li>SegWit activation</li>
+    <li>Taproot</li>
+    <li>MWEB</li>
+    <li>Signet</li>
+  </ul>
+
+  <h2 style="margin-top:28px; padding-top:16px;">Frontend Direction</h2>
+  <p style="margin-top:10px; margin-bottom:18px;">Nu differs from Litecoin Core and earlier Defcoin Core builds by using a separate, minimal Qt Quick interface. The design aims to keep wallet actions legible and explicit while making node state transparent without requiring users to scan dense legacy status bars.</p>
+  <p style="margin-top:10px; margin-bottom:18px;">The visual direction is influenced by the Nothing design language for minimalist reduction and by the Bitcoin Design Guide / Bitcoin Core App design principles for safety, neutral visuals, and understandable node activity.</p>
+  <p style="margin-top:10px; margin-bottom:18px;">The Bitcoin Core QML project was reviewed as an architectural reference. No source code was imported from it in this pass; its useful lesson for Nu is to keep QML presentation, app models, and backend node logic cleanly separated.</p>
+
+  <h2 style="margin-top:28px; padding-top:16px;">Defcoin History</h2>
+  <p style="margin-top:10px; margin-bottom:18px;">Defcoin is an older Scrypt-chain project with community source trees and restoration work preserved across several repositories and infrastructure efforts. In 2026, the project is used as a revived community full-node and mining experiment, a compatibility target for legacy Defcoin wallets, and a place to test practical node, pool, explorer, and wallet modernization work. Some hoped-for future uses include use-case experimentation, badge-integration opportunities, non-fiat exchange experiments, and community education around full-node operation.</p>
+  <p style="margin-top:10px; margin-bottom:18px;">The dc903 reference site documents current operational surfaces, source lineage from older Defcoin repositories, early-chain reference points, peer/version checks, P2Pool and explorer notes, and protocol-review notes.</p>
+
+  <h2 style="margin-top:28px; padding-top:16px;">Current Defcoin Sites And Communities (May 2026)</h2>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin pool and community mining site</b> <a href="https://defcoin.io/" title="Open https://defcoin.io/">https://defcoin.io/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin reference and operations site</b> <a href="https://defcoin.dc903.org/" title="Open https://defcoin.dc903.org/">https://defcoin.dc903.org/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin subreddit</b> <a href="https://www.reddit.com/r/defcoin/" title="Open https://www.reddit.com/r/defcoin/">https://www.reddit.com/r/defcoin/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin Discord community</b> Find or request current invite links from <a href="https://www.reddit.com/r/defcoin/" title="Open https://www.reddit.com/r/defcoin/">https://www.reddit.com/r/defcoin/</a></p>
+
+  <h2 style="margin-top:28px; padding-top:16px;">References</h2>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin reference site</b> <a href="https://defcoin.dc903.org/" title="Open https://defcoin.dc903.org/">https://defcoin.dc903.org/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin history notes</b> <a href="https://defcoin.dc903.org/history" title="Open https://defcoin.dc903.org/history">https://defcoin.dc903.org/history</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin pool/community mining site</b> <a href="https://defcoin.io/" title="Open https://defcoin.io/">https://defcoin.io/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Defcoin subreddit</b> <a href="https://www.reddit.com/r/defcoin/" title="Open https://www.reddit.com/r/defcoin/">https://www.reddit.com/r/defcoin/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Bitcoin Design Guide</b> <a href="https://bitcoin.design/guide/" title="Open https://bitcoin.design/guide/">https://bitcoin.design/guide/</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Bitcoin Core QML project</b> <a href="https://github.com/bitcoin-core/gui-qml" title="Open https://github.com/bitcoin-core/gui-qml">https://github.com/bitcoin-core/gui-qml</a></p>
+  <p class="source-entry" style="margin-top:16px; margin-bottom:16px;"><b>Nothing Design Skill</b> <a href="https://github.com/dominikmartn/nothing-design-skill/blob/main/nothing-design/SKILL.md" title="Open https://github.com/dominikmartn/nothing-design-skill/blob/main/nothing-design/SKILL.md">https://github.com/dominikmartn/nothing-design-skill/blob/main/nothing-design/SKILL.md</a></p>
+</body>
+</html>

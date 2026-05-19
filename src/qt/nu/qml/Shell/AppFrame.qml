@@ -9,6 +9,10 @@ Item {
     id: root
 
     property string currentRoute: "home"
+    property int nodeInitialTab: 0
+    property int peerInitialView: 0
+
+    signal aboutRequested
 
     function routeIndex(route) {
         switch (route) {
@@ -21,16 +25,22 @@ Item {
         }
     }
 
+    function openUri(uri) {
+        root.currentRoute = "send"
+        sendView.loadUri(uri)
+    }
+
     RowLayout {
         anchors.fill: parent
         spacing: 0
 
         NavigationRail {
             id: nav
-            Layout.preferredWidth: 184
+            Layout.preferredWidth: 216
             Layout.fillHeight: true
             currentRoute: root.currentRoute
             onRouteRequested: (route) => root.currentRoute = route
+            onAboutRequested: root.aboutRequested()
         }
 
         Rectangle {
@@ -53,11 +63,18 @@ Item {
 
                     currentIndex: root.routeIndex(root.currentRoute)
 
-                    HomeView {}
-                    SendView {}
+                    HomeView {
+                        onNavigateRequested: (route) => root.currentRoute = route
+                    }
+                    SendView {
+                        id: sendView
+                    }
                     ReceiveView {}
                     ActivityView {}
-                    NodeView {}
+                    NodeView {
+                        initialTab: root.nodeInitialTab
+                        initialPeerView: root.peerInitialView
+                    }
                     SettingsView {}
                 }
             }

@@ -30,14 +30,14 @@
 
 //! Public Defcoin release identity. Keep this separate from CLIENT_VERSION,
 //! which is still the protocol/client integer used for wire compatibility.
-#define DEFCOIN_RELEASE_VERSION_STR "2026.1"
-#define DEFCOIN_RELEASE_CODENAME_STR "Token Jester"
+#define DEFCOIN_RELEASE_VERSION_STR "26.3.0"
+#define DEFCOIN_RELEASE_CODENAME_STR "Core Memories"
 #if ENABLE_DEFCOIN_FUN_UI
-#define DEFCOIN_PRODUCT_NAME_STR "Defcoin Core DC34 Edition"
-#define DEFCOIN_OS_DISPLAY_VERSION_STR DEFCOIN_RELEASE_VERSION_STR " DC34 Edition"
+#define DEFCOIN_PRODUCT_NAME_STR "Defcoin Core Nu DC34 Edition"
+#define DEFCOIN_OS_DISPLAY_VERSION_STR DEFCOIN_RELEASE_VERSION_STR " Nu DC34 Edition"
 #define DEFCOIN_BUILD_VARIANT_SUFFIX_STR "-dc34"
 #else
-#define DEFCOIN_PRODUCT_NAME_STR "Defcoin Core"
+#define DEFCOIN_PRODUCT_NAME_STR "Defcoin Core Nu"
 #define DEFCOIN_OS_DISPLAY_VERSION_STR DEFCOIN_RELEASE_VERSION_STR
 #define DEFCOIN_BUILD_VARIANT_SUFFIX_STR ""
 #endif

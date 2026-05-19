@@ -1,2 +1,1 @@
 singleton NuTokens 1.0 Theme/Tokens.qml
-singleton NuFakeService 1.0 Bridge/NuFakeService.qml

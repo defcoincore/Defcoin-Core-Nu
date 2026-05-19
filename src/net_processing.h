@@ -25,8 +25,11 @@ extern RecursiveMutex g_cs_orphans;
 
 void SetOnlyDefcoinUserAgents(bool enabled);
 bool GetOnlyDefcoinUserAgents();
+void SetAllowLanNodeDiscovery(bool enabled);
+bool GetAllowLanNodeDiscovery();
 
 static const bool DEFAULT_DEFCOIN_USER_AGENT_FILTER = true;
+static const bool DEFAULT_ALLOW_LAN_NODE_DISCOVERY = true;
 
 /** Default for -maxorphantx, maximum number of orphan transactions kept in memory */
 static const unsigned int DEFAULT_MAX_ORPHAN_TRANSACTIONS = 100;

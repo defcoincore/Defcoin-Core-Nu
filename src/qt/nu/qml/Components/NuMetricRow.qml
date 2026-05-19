@@ -14,13 +14,13 @@ RowLayout {
     Label {
         text: root.label
         color: NuTokens.textSecondary
-        font.pixelSize: 13
+        font.pixelSize: NuTokens.fontSmall
     }
 
     Label {
         text: root.value
         color: NuTokens.textPrimary
-        font.pixelSize: 14
-        font.bold: true
+        font.pixelSize: NuTokens.fontBody
+        font.weight: Font.DemiBold
     }
 }

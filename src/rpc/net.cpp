@@ -126,6 +126,9 @@ static RPCHelpMan getpeerinfo()
                             {RPCResult::Type::NUM, "version", "The peer version, such as 70001"},
                             {RPCResult::Type::STR, "subver", "The string version"},
                             {RPCResult::Type::BOOL, "inbound", "Inbound (true) or Outbound (false)"},
+                            {RPCResult::Type::STR, "p2p_magic", "Actual P2P message-start bytes selected from this peer's packet header"},
+                            {RPCResult::Type::BOOL, "p2p_magic_legacy", "Whether this peer is using the legacy Litecoin-compatible Defcoin message-start bytes"},
+                            {RPCResult::Type::STR, "magic", "Actual P2P message-start bytes selected from this peer's packet header"},
                             {RPCResult::Type::BOOL, "addnode", "Whether connection was due to addnode/-connect or if it was an automatic/inbound connection\n"
                                                                "(DEPRECATED, returned only if the config option -deprecatedrpc=getpeerinfo_addnode is passed)"},
                             {RPCResult::Type::STR, "connection_type", "Type of connection: \n" + Join(CONNECTION_TYPE_DOC, ",\n") + ".\n"
@@ -139,7 +142,7 @@ static RPCHelpMan getpeerinfo()
                             {
                                 {RPCResult::Type::NUM, "n", "The heights of blocks we're currently asking from this peer"},
                             }},
-                            {RPCResult::Type::NUM, "addr_processed", "The total number of addresses processed, excluding those dropped due to rate limiting"},
+                            {RPCResult::Type::NUM, "addr_processed", "The total number of addr/addrv2 relay entries processed from this peer, excluding those dropped due to rate limiting. This is not a unique-node count and may include duplicate or stale relay entries."},
                             {RPCResult::Type::NUM, "addr_rate_limited", "The total number of addresses dropped due to rate limiting"},
                             {RPCResult::Type::BOOL, "whitelisted", /* optional */ true, "Whether the peer is whitelisted with default permissions\n"
                                                                                         "(DEPRECATED, returned only if config option -deprecatedrpc=whitelisted is passed)"},
@@ -221,6 +224,9 @@ static RPCHelpMan getpeerinfo()
         // their ver message.
         obj.pushKV("subver", stats.cleanSubVer);
         obj.pushKV("inbound", stats.fInbound);
+        obj.pushKV("p2p_magic", stats.m_message_start_hex);
+        obj.pushKV("p2p_magic_legacy", stats.m_using_legacy_magic);
+        obj.pushKV("magic", stats.m_message_start_selected ? stats.m_message_start_hex : "pending");
         if (IsDeprecatedRPCEnabled("getpeerinfo_addnode")) {
             // addnode is deprecated in v0.21 for removal in v0.22
             obj.pushKV("addnode", stats.m_manual_connection);
@@ -846,6 +852,43 @@ static RPCHelpMan setnetworkactive()
     };
 }
 
+static RPCHelpMan getonlydefcoinuseragents()
+{
+    return RPCHelpMan{"getonlydefcoinuseragents",
+                "\nReturns whether non-Defcoin-prefixed peer user agents are rejected.\n",
+                {},
+                RPCResult{RPCResult::Type::BOOL, "", "true when only Defcoin-prefixed peers are accepted"},
+                RPCExamples{
+                    HelpExampleCli("getonlydefcoinuseragents", "")
+            + HelpExampleRpc("getonlydefcoinuseragents", "")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    return GetOnlyDefcoinUserAgents();
+},
+    };
+}
+
+static RPCHelpMan setonlydefcoinuseragents()
+{
+    return RPCHelpMan{"setonlydefcoinuseragents",
+                "\nEnable or disable the Defcoin peer user-agent prefix filter.\n",
+                {
+                    {"enabled", RPCArg::Type::BOOL, RPCArg::Optional::NO, "true to accept only peers whose user agent begins with Defcoin, false to accept all peers"},
+                },
+                RPCResult{RPCResult::Type::BOOL, "", "The filter state after applying the request"},
+                RPCExamples{
+                    HelpExampleCli("setonlydefcoinuseragents", "true")
+            + HelpExampleRpc("setonlydefcoinuseragents", "true")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    SetOnlyDefcoinUserAgents(request.params[0].get_bool());
+    return GetOnlyDefcoinUserAgents();
+},
+    };
+}
+
 static RPCHelpMan getnodeaddresses()
 {
     return RPCHelpMan{"getnodeaddresses",
@@ -968,6 +1011,8 @@ static const CRPCCommand commands[] =
     { "network",            "listbanned",             &listbanned,             {} },
     { "network",            "clearbanned",            &clearbanned,            {} },
     { "network",            "setnetworkactive",       &setnetworkactive,       {"state"} },
+    { "network",            "getonlydefcoinuseragents", &getonlydefcoinuseragents, {} },
+    { "network",            "setonlydefcoinuseragents", &setonlydefcoinuseragents, {"enabled"} },
     { "network",            "getnodeaddresses",       &getnodeaddresses,       {"count"} },
     { "hidden",             "addconnection",          &addconnection,          {"address", "connection_type"} },
     { "hidden",             "addpeeraddress",         &addpeeraddress,         {"address", "port"} },

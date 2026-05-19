@@ -64,7 +64,11 @@ public:
     };
 
     const Consensus::Params& GetConsensus() const { return consensus; }
+    // Keep MessageStart() stable for inherited Litecoin-derived storage paths.
+    // Live P2P dual-magic code should use the explicit magic accessors below.
     const CMessageHeader::MessageStartChars& MessageStart() const { return pchMessageStart; }
+    const CMessageHeader::MessageStartChars& MessageStartDefcoinMagic() const { return pchMessageStartDefcoinMagic; }
+    const CMessageHeader::MessageStartChars& MessageStartLegacyMagic() const { return pchMessageStartLegacyMagic; }
     int GetDefaultPort() const { return nDefaultPort; }
 
     const CBlock& GenesisBlock() const { return genesis; }
@@ -98,6 +102,8 @@ protected:
 
     Consensus::Params consensus;
     CMessageHeader::MessageStartChars pchMessageStart;
+    CMessageHeader::MessageStartChars pchMessageStartDefcoinMagic;
+    CMessageHeader::MessageStartChars pchMessageStartLegacyMagic;
     int nDefaultPort;
     uint64_t nPruneAfterHeight;
     uint64_t m_assumed_blockchain_size;

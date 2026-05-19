@@ -1,18 +1,18 @@
-# Nu UI Scaffold
+# Defcoin Core Nu UI Implementation
 
-This directory contains non-active QML and design assets for the future
-Defcoin Core Nu interface.
-
-It is intentionally not connected to the current Qt Widgets build yet.
+This directory contains the developer reference for Defcoin Core Nu 26.3.0.
+Nu is a Qt Quick interface that talks to the Defcoin Core backend through a
+small JSON-RPC service layer.
 
 ## Target
 
 - Qt Quick / QML presentation.
-- GUI/client process separated from node/wallet service process.
+- GUI/client process separated from node/wallet service process where possible.
+- Local app bundle may start a bundled `defcoind` when no RPC backend is
+  already available.
 - Neutral professional visual style.
-- Wallet actions routed through typed service/client APIs.
-- Inert graphical scaffold that can be run against fake data before touching
-  consensus, wallet, or networking code.
+- Wallet actions routed through the local `NuRpcService` JSON-RPC client.
+- No consensus, wallet, or networking internals on the QML scene thread.
 
 ## Do Not Put Here
 
@@ -27,11 +27,27 @@ It is intentionally not connected to the current Qt Widgets build yet.
 
 ```text
 qml/Main.qml              Nu shell entry point
-qml/Bridge/               fake service now; typed IPC client later
 qml/Components/           reusable QML controls
 qml/Shell/                app frame, nav, and status strip
 qml/Theme/Tokens.qml      neutral visual tokens
 qml/Views/                wallet and node views
 assets/icons/             Nu SVG icon system
-resources/nu.qrc          inactive resource manifest
+assets/brand/             Nu app icon, splash, QR, and brand mark
+resources/nu.qrc          Qt resource manifest for the Nu app
 ```
+
+See `functionality-map.md` for the current Litecoin/Defcoin wallet function
+coverage map.
+
+See `backend-frontend-boundary.md` for the service-boundary rules that keep
+wallet keys, signing, validation, and networking out of QML.
+
+See `build-and-installer-runbook.md` for the current local build, staging,
+installer, cleanup, and verification procedure.
+
+See `bitcoin-core-qml-comparison.md` for the current investigation report on
+Bitcoin Core QML ideas that may be worth adopting later.
+
+See `roadmap-2026.3-help-manual.md` for the held help-manual inventory
+and cleanup checklist. Nu 26.3.0 intentionally ships without the full Help
+manual and keeps only About Build Notes in the app.

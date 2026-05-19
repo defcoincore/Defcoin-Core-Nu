@@ -80,7 +80,7 @@ Console runs RPC commands. Use it only when you understand the command because R
 
 Network Traffic charts received bytes, sent bytes, recent average latency, peer-average latency, optional moving averages, and visible time ranges. Lower latency means a peer set is responding faster.
 
-Peers lists connected, inactive, local, and optionally banned peers. Columns include Node ID, Node, Port, FQDN, Domain Alias, Version, Services, Avg Ping, Recent Ping, Traffic Health, Sent, Received, User Agent, UA Count, Geo, City/St, and Seed.
+Peers lists connected, inactive, local, and optionally banned peers. Nu, DC34, and the DC903 explorer use the same first-pass labels where the data is available: Node Id., Dir., IP Address, Port, Ping, Sent, Rec'd, User Agent, Magic, Version, and Services. The Magic value comes from the actual P2P packet header used for that peer, not from the user-agent string. IPv4 addresses use right-aligned octets; IPv6 addresses keep their compressed display form and sort numerically.
 
 Traffic Health is a compact heartbeat-style graph for each peer. It summarizes recent ping timing and traffic activity. Green generally means faster relative response, amber moderate response, and red slower response.
 
@@ -106,7 +106,11 @@ The "Only accept Defcoin-prefixed User Agents" setting rejects peers whose adver
 
 ## PSBT
 
-Use the phrase Partially Signed Bitcoin/Defcoin Transaction (PSBT) for user-facing text. PSBT is a Bitcoin-origin transaction handoff format used by wallets and signers. In Defcoin Core it should be treated as an advanced signing workflow. Because Defcoin mainnet is intentionally legacy-compatible, do not assume every modern Bitcoin or Litecoin PSBT workflow is appropriate without testing.
+A Partially Signed Bitcoin/Defcoin Transaction (PSBT) is a portable transaction package used when creating, signing, and broadcasting are separated into more than one step. A new user usually does not need PSBT for a normal payment. It is mainly useful for offline signing, watch-only preparation, hardware-signing workflows, or multi-person review.
+
+In Nu, PSBT tools live under Send > Advanced send options. A user can create a PSBT from the current Send form without broadcasting it, load a PSBT from a file or clipboard, review the backend analysis, sign with the wallet where possible, finalize only when all required signatures are present, broadcast a finalized transaction, or save/copy the updated PSBT for another signer.
+
+Before using PSBT, confirm which wallet owns the keys, which device is expected to sign, and which device is expected to broadcast. If the goal is simply to send Defcoin from this wallet, use Review transaction and Send instead.
 
 ## Unsupported or Compatibility-Limited Features
 
@@ -152,8 +156,8 @@ Seed node: a DNS host or fixed address used to discover peers when your node sta
 - [BIP 32: Hierarchical Deterministic Wallets](https://bips.dev/32/)
 - [BIP 155: addrv2 message](https://bips.dev/155/)
 - [Bitcoin Optech: Using descriptors and PSBT](https://bitcoinops.org/en/river-descriptors-psbt/)
-- Peer-to-peer: [Wikipedia](https://en.wikipedia.org/wiki/Peer-to-peer) | [Grokipedia](https://grokipedia.com/page/Peer-to-peer)
-- Fully qualified domain name: [Wikipedia](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) | [Grokipedia](https://grokipedia.com/page/Fully_qualified_domain_name)
-- Latency: [Wikipedia](https://en.wikipedia.org/wiki/Latency_(engineering)) | [Grokipedia](https://grokipedia.com/page/Latency_(engineering))
-- Traceroute: [Wikipedia](https://en.wikipedia.org/wiki/Traceroute) | [Grokipedia](https://grokipedia.com/page/Traceroute)
-- Berkeley DB: [Wikipedia](https://en.wikipedia.org/wiki/Berkeley_DB) | [Grokipedia](https://grokipedia.com/page/Berkeley_DB)
+- Peer-to-peer: [Grokipedia article](https://grokipedia.com/page/Peer-to-peer) | [Wikipedia article](https://en.wikipedia.org/wiki/Peer-to-peer)
+- Fully qualified domain name: [Grokipedia article](https://grokipedia.com/page/Fully_qualified_domain_name) | [Wikipedia article](https://en.wikipedia.org/wiki/Fully_qualified_domain_name)
+- Latency: [Grokipedia article](https://grokipedia.com/page/Latency_(engineering)) | [Wikipedia article](https://en.wikipedia.org/wiki/Latency_(engineering))
+- Traceroute: [Grokipedia article](https://grokipedia.com/page/Traceroute) | [Wikipedia article](https://en.wikipedia.org/wiki/Traceroute)
+- Berkeley DB: [Grokipedia article](https://grokipedia.com/page/Berkeley_DB) | [Wikipedia article](https://en.wikipedia.org/wiki/Berkeley_DB)

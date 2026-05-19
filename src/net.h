@@ -43,6 +43,11 @@ class CNode;
 class BanMan;
 struct bilingual_str;
 
+static const bool DEFAULT_ACCEPT_LEGACY_MAGIC = true;
+
+void SetAcceptLegacyMagic(bool enabled);
+bool GetAcceptLegacyMagic();
+
 /** Default for -whitelistrelay. */
 static const bool DEFAULT_WHITELISTRELAY = true;
 /** Default for -whitelistforcerelay. */
@@ -738,6 +743,9 @@ public:
     std::string m_network;
     uint32_t m_mapped_as;
     std::string m_conn_type_string;
+    bool m_message_start_selected{false};
+    bool m_using_legacy_magic{false};
+    std::string m_message_start_hex;
 };
 
 
@@ -772,6 +780,9 @@ public:
     virtual bool Complete() const = 0;
     // set the serialization context version
     virtual void SetVersion(int version) = 0;
+    virtual bool MessageStartSelected() const = 0;
+    virtual bool UsingLegacyMagic() const = 0;
+    virtual const CMessageHeader::MessageStartChars& ActiveMessageStart() const = 0;
     // read and deserialize data
     virtual int Read(const char *data, unsigned int bytes) = 0;
     // decomposes a message from the context
@@ -792,8 +803,13 @@ private:
     CDataStream vRecv;              // received message data
     unsigned int nHdrPos;
     unsigned int nDataPos;
+    CMessageHeader::MessageStartChars m_active_message_start;
+    bool m_message_start_selected{false};
+    bool m_using_legacy_magic{false};
 
     const uint256& GetMessageHash() const;
+    bool MatchMessageStart(const CMessageHeader::MessageStartChars& message_start) const;
+    bool TrySelectMessageStart();
     int readHeader(const char *pch, unsigned int nBytes);
     int readData(const char *pch, unsigned int nBytes);
 
@@ -815,6 +831,9 @@ public:
           hdrbuf(nTypeIn, nVersionIn),
           vRecv(nTypeIn, nVersionIn)
     {
+        for (unsigned int i = 0; i < CMessageHeader::MESSAGE_START_SIZE; ++i) {
+            m_active_message_start[i] = m_chain_params.MessageStartDefcoinMagic()[i];
+        }
         Reset();
     }
 
@@ -829,6 +848,9 @@ public:
         hdrbuf.SetVersion(nVersionIn);
         vRecv.SetVersion(nVersionIn);
     }
+    bool MessageStartSelected() const override { return m_message_start_selected; }
+    bool UsingLegacyMagic() const override { return m_using_legacy_magic; }
+    const CMessageHeader::MessageStartChars& ActiveMessageStart() const override { return m_active_message_start; }
     int Read(const char *pch, unsigned int nBytes) override {
         int ret = in_data ? readData(pch, nBytes) : readHeader(pch, nBytes);
         if (ret < 0) Reset();
@@ -841,13 +863,19 @@ public:
  */
 class TransportSerializer {
 public:
+    virtual void SetMessageStart(const CMessageHeader::MessageStartChars& message_start) = 0;
     // prepare message for transport (header construction, error-correction computation, payload encryption, etc.)
     virtual void prepareForTransport(CSerializedNetMsg& msg, std::vector<unsigned char>& header) = 0;
     virtual ~TransportSerializer() {}
 };
 
 class V1TransportSerializer  : public TransportSerializer {
+private:
+    CMessageHeader::MessageStartChars m_message_start;
+
 public:
+    explicit V1TransportSerializer(const CMessageHeader::MessageStartChars& message_start);
+    void SetMessageStart(const CMessageHeader::MessageStartChars& message_start) override;
     void prepareForTransport(CSerializedNetMsg& msg, std::vector<unsigned char>& header) override;
 };
 
@@ -1071,7 +1099,7 @@ public:
     // Whether a ping is requested.
     std::atomic<bool> fPingQueued{false};
 
-    CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress &addrBindIn, const std::string &addrNameIn, ConnectionType conn_type_in, bool inbound_onion = false);
+    CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress &addrBindIn, const std::string &addrNameIn, ConnectionType conn_type_in, bool inbound_onion = false, bool use_legacy_outbound_magic = false);
     ~CNode();
     CNode(const CNode&) = delete;
     CNode& operator=(const CNode&) = delete;

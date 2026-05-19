@@ -1394,7 +1394,7 @@
                <item row="5" column="0">
                 <widget class="QLabel" name="label_29">
                  <property name="text">
-                  <string>Starting Block</string>
+                  <string>Start Height</string>
                  </property>
                 </widget>
                </item>

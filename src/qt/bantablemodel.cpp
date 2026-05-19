@@ -160,7 +160,7 @@ BanTableModel::BanTableModel(interfaces::Node& node, QObject* parent) :
         << tr("City, St")
         << tr("Permissions")
         << tr("Direction")
-        << tr("Starting Block")
+        << tr("Start Height")
         << tr("Synced Headers")
         << tr("Synced Blocks")
         << tr("Connection Time")

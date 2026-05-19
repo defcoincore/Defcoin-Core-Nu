@@ -1,0 +1,77 @@
+if(NOT DEFINED DEFCOIN_NU_RESOURCE_DIR)
+    message(FATAL_ERROR "DEFCOIN_NU_RESOURCE_DIR is required")
+endif()
+
+if(NOT DEFINED DEFCOIN_NU_RELEASE_NAME)
+    set(DEFCOIN_NU_RELEASE_NAME "unknown")
+endif()
+
+if(NOT DEFINED DEFCOIN_NU_SOURCE_DIR)
+    set(DEFCOIN_NU_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+endif()
+
+string(TIMESTAMP DEFCOIN_NU_BUILD_TIMESTAMP_UTC "%Y-%m-%dT%H:%M:%SZ" UTC)
+string(TIMESTAMP DEFCOIN_NU_BUILD_STAMP_COMPACT "%Y%m%d-%H%M%S" UTC)
+
+execute_process(
+    COMMAND git -C "${DEFCOIN_NU_SOURCE_DIR}" rev-parse --show-toplevel
+    OUTPUT_VARIABLE DEFCOIN_NU_GIT_ROOT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+)
+
+if(NOT DEFCOIN_NU_GIT_ROOT)
+    set(DEFCOIN_NU_GIT_ROOT "${DEFCOIN_NU_SOURCE_DIR}")
+endif()
+
+execute_process(
+    COMMAND git -C "${DEFCOIN_NU_GIT_ROOT}" rev-parse --short=12 HEAD
+    OUTPUT_VARIABLE DEFCOIN_NU_GIT_COMMIT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+)
+
+if(NOT DEFCOIN_NU_GIT_COMMIT)
+    set(DEFCOIN_NU_GIT_COMMIT "nogit")
+endif()
+
+execute_process(
+    COMMAND git -C "${DEFCOIN_NU_GIT_ROOT}" status --porcelain
+    OUTPUT_VARIABLE DEFCOIN_NU_GIT_STATUS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+)
+
+set(DEFCOIN_NU_DIRTY_SUFFIX "")
+if(DEFCOIN_NU_GIT_STATUS)
+    set(DEFCOIN_NU_DIRTY_SUFFIX "-dirty")
+endif()
+
+set(DEFCOIN_NU_BUILD_ID "${DEFCOIN_NU_RELEASE_NAME}+${DEFCOIN_NU_BUILD_STAMP_COMPACT}-${DEFCOIN_NU_GIT_COMMIT}${DEFCOIN_NU_DIRTY_SUFFIX}")
+
+file(MAKE_DIRECTORY "${DEFCOIN_NU_RESOURCE_DIR}")
+file(WRITE "${DEFCOIN_NU_RESOURCE_DIR}/BUILD_INFO.txt"
+"Defcoin Core Nu Build Information
+Release: ${DEFCOIN_NU_RELEASE_NAME}
+Build ID: ${DEFCOIN_NU_BUILD_ID}
+Build timestamp UTC: ${DEFCOIN_NU_BUILD_TIMESTAMP_UTC}
+Git commit: ${DEFCOIN_NU_GIT_COMMIT}${DEFCOIN_NU_DIRTY_SUFFIX}
+Git root: ${DEFCOIN_NU_GIT_ROOT}
+")
+
+file(WRITE "${DEFCOIN_NU_RESOURCE_DIR}/BUILD_INFO.properties"
+"release=${DEFCOIN_NU_RELEASE_NAME}
+build_id=${DEFCOIN_NU_BUILD_ID}
+build_timestamp_utc=${DEFCOIN_NU_BUILD_TIMESTAMP_UTC}
+git_commit=${DEFCOIN_NU_GIT_COMMIT}${DEFCOIN_NU_DIRTY_SUFFIX}
+")
+
+if(DEFINED DEFCOIN_NU_PLIST_PATH AND EXISTS "${DEFCOIN_NU_PLIST_PATH}" AND EXISTS "/usr/libexec/PlistBuddy")
+    foreach(key IN ITEMS DefcoinNuReleaseVersion DefcoinNuBuildID DefcoinNuBuildTimestampUTC DefcoinNuGitCommit)
+        execute_process(COMMAND /usr/libexec/PlistBuddy -c "Delete :${key}" "${DEFCOIN_NU_PLIST_PATH}" ERROR_QUIET)
+    endforeach()
+    execute_process(COMMAND /usr/libexec/PlistBuddy -c "Add :DefcoinNuReleaseVersion string ${DEFCOIN_NU_RELEASE_NAME}" "${DEFCOIN_NU_PLIST_PATH}")
+    execute_process(COMMAND /usr/libexec/PlistBuddy -c "Add :DefcoinNuBuildID string ${DEFCOIN_NU_BUILD_ID}" "${DEFCOIN_NU_PLIST_PATH}")
+    execute_process(COMMAND /usr/libexec/PlistBuddy -c "Add :DefcoinNuBuildTimestampUTC string ${DEFCOIN_NU_BUILD_TIMESTAMP_UTC}" "${DEFCOIN_NU_PLIST_PATH}")
+    execute_process(COMMAND /usr/libexec/PlistBuddy -c "Add :DefcoinNuGitCommit string ${DEFCOIN_NU_GIT_COMMIT}${DEFCOIN_NU_DIRTY_SUFFIX}" "${DEFCOIN_NU_PLIST_PATH}")
+endif()

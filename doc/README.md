@@ -5,8 +5,8 @@ Setup
 ---------------------
 Defcoin Core is the original Defcoin client and it builds the backbone of the network. It downloads and, by default, stores the entire history of Defcoin transactions, which requires approximately 22 gigabytes of disk space. Depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
-The current development release line is Defcoin Core `2026.1`, codename
-`Token Jester`.
+The current Nu release line is Defcoin Core Nu `26.3.0`, codename
+`Core Memories`.
 
 Running
 ---------------------
@@ -51,6 +51,7 @@ Defcoin-specific build and release preparation:
 - [Defcoin Build Deviation Matrix](defcoin-build-deviation-matrix.md)
 - [Defcoin Standard Conversion Notes](defcoin-litecoin-conversion-notes.md)
 - [Defcoin Modern Build Guide](defcoin-modern-build-guide.md)
+- [Defcoin Core Nu GitHub Notes](defcoin-core-nu-github-notes.md)
 - [Litecoin Upstream Comparison](litecoin-upstream-comparison-standard.md)
 - [GitHub Publication Checklist](github-publication-checklist.md)
 - [Defcoin 2026.1 Development Checkpoint](defcoin-2026.1-development-checkpoint.md)

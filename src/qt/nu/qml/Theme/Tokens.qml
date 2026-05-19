@@ -23,14 +23,29 @@ QtObject {
     readonly property color dataReceived: "#19a663"
     readonly property color dataSent: "#2f80ed"
     readonly property color accentSky: "#5da9f6"
+    readonly property color checkMarkGreen: "#19c37d"
 
     readonly property int radiusSmall: 4
     readonly property int radiusMedium: 6
     readonly property int radiusLarge: 8
+
+    readonly property int fontTiny: 13
+    readonly property int fontSmall: 15
+    readonly property int fontBody: 16
+    readonly property int fontBodyLarge: 18
+    readonly property int fontTitle: 36
+    readonly property int fontHero: 44
+    readonly property int fontLog: 13
+
+    readonly property string bodyFont: Qt.platform.os === "windows" ? "Segoe UI" : "Arial"
+    readonly property string monoFont: Qt.platform.os === "windows" ? "Consolas" : (Qt.platform.os === "osx" ? "Menlo" : "monospace")
 
     readonly property int spaceXs: 4
     readonly property int spaceSm: 8
     readonly property int spaceMd: 12
     readonly property int spaceLg: 16
     readonly property int spaceXl: 24
+
+    readonly property int tooltipDelay: 850
+    readonly property int tooltipTimeout: 6000
 }
