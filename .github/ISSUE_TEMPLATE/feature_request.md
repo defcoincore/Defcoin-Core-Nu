@@ -1,20 +1,23 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: Suggest a Defcoin Core Nu improvement
 title: ''
-labels: Feature
+labels: enhancement
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-<!-- A clear and concise description of what the problem is. Ex. I'm always frustrated when [...] -->
+## Goal
 
-**Describe the solution you'd like**
-<!-- A clear and concise description of what you want to happen. -->
+What should the wallet or node help users do?
 
-**Describe alternatives you've considered**
-<!-- A clear and concise description of any alternative solutions or features you've considered. -->
+## Proposed Behavior
 
-**Additional context**
-<!-- Add any other context or screenshots about the feature request here. -->
+Describe the desired behavior.
+
+## Why This Helps Defcoin
+
+Explain the user, wallet, network, mining, or developer benefit.
+
+## Notes
+
+Include screenshots, examples, or related references if useful.

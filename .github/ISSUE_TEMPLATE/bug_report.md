@@ -1,41 +1,37 @@
 ---
 name: Bug report
-about: Create a report to help us improve (use this for suspected bugs only, if not sure, open a regular issue below)
+about: Report a reproducible Defcoin Core Nu problem
 title: ''
-labels: Bug
+labels: bug
 assignees: ''
-
 ---
 
-<!-- This issue tracker is only for technical issues related to Bitcoin Core.
+## Summary
 
-General bitcoin questions and/or support requests are best directed to the Bitcoin StackExchange at https://bitcoin.stackexchange.com.
+Describe the problem clearly.
 
-For reporting security issues, please read instructions at https://bitcoincore.org/en/contact/.
+## Expected Behavior
 
-If the node is "stuck" during sync or giving "block checksum mismatch" errors, please ensure your hardware is stable by running memtest and observe CPU temperature with a load-test tool such as linpack before creating an issue! -->
+What should have happened?
 
-<!-- Describe the issue -->
+## Actual Behavior
 
-**Expected behavior**
+What happened instead?
 
-<!--- What behavior did you expect? -->
+## Steps To Reproduce
 
-**Actual behavior**
+1.
+2.
+3.
 
-<!--- What was the actual behavior (provide screenshots if the issue is GUI-related)? -->
+## System Information
 
-**To reproduce**
+- Defcoin Core Nu version:
+- Operating system:
+- CPU architecture:
+- Install type: installer, DMG, portable ZIP, or source build
 
-<!--- How reliably can you reproduce the issue, what are the steps to do so? -->
+## Logs Or Screenshots
 
-**System information**
-
-<!-- What version of Bitcoin Core are you using, where did you get it (website, self-compiled, etc)? -->
-
-<!-- What type of machine are you observing the error on (OS/CPU and disk type)? -->
-
-<!-- GUI-related issue? What is your operating system and its version? If Linux, what is your desktop environment and graphical shell? -->
-
-<!-- Any extra information that might be useful in the debugging process. -->
-<!--- This is normally the contents of a `debug.log` or `config.log` file. Raw text or a link to a pastebin type site are preferred. -->
+Attach only logs or screenshots that do not expose wallet secrets, private keys,
+passphrases, RPC cookies, API tokens, or personal information.

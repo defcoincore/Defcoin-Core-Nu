@@ -1,15 +1,21 @@
 # Security Policy
 
-## Reporting a Vulnerability
+## Supported Release
 
-To report security issues send an email to contact@litecoin.org (not for support).
+Security review is focused on the current Defcoin Core Nu release line.
 
-The following keys may be used to communicate sensitive information to developers:
+## Reporting A Vulnerability
 
-| Name | Fingerprint |
-|------|-------------|
-| Charlie Lee | 1A2511E978239E491A096D0A828AC1F94EF26053 |
-| David Burkett | D35621D53A1CC6A3456758D03620E9D387E55666 |
-| Loshan T | C0921846FED0BF4CF28BE1D73B2A6315CD51A673 |
+Please report suspected vulnerabilities privately to the Defcoin Core project
+maintainers before opening a public issue.
 
-You can import a key by running the following command with that individual’s fingerprint: `gpg --recv-keys "<fingerprint>"` Ensure that you put quotes around fingerprints containing spaces.
+Include:
+
+- The affected Defcoin Core Nu version.
+- Operating system and architecture.
+- Steps to reproduce, if safe to share.
+- Logs or screenshots only when they do not expose wallet secrets, private keys,
+  seed phrases, passphrases, RPC credentials, or personal information.
+
+Never post private keys, wallet passphrases, RPC cookies, API tokens, or full
+wallet files in a GitHub issue.
