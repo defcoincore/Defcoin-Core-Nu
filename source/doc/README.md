@@ -2,7 +2,7 @@
 
 Defcoin Core Nu `26.3.1`, codename `Core Memories`, is the current packaged
 full-node desktop wallet for the Defcoin network. The root
-[README](../README.md) is the product landing page; this directory keeps build,
+[README](../../README.md) is the product landing page; this directory keeps build,
 developer, release, and inherited upstream reference material.
 
 For wallet and node basics, start with the app's About and Build Notes. For
@@ -64,4 +64,4 @@ implementation details, start with the consolidated
 
 ## License
 
-Distributed under the [MIT software license](/COPYING).
+Distributed under the [MIT software license](../../COPYING).

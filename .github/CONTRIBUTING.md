@@ -5,7 +5,7 @@ Bitcoin Core. Contributions should preserve Defcoin chain compatibility first.
 
 ## Before Opening A Pull Request
 
-- Read the [technical guide](../doc/defcoin-core-nu-technical-guide.md).
+- Read the [technical guide](../source/doc/defcoin-core-nu-technical-guide.md).
 - Build and test on the platform affected by your change.
 - Keep changes scoped and explain the user-facing or network-facing reason.
 - Do not change consensus behavior unless the change is explicitly reviewed as
@@ -19,6 +19,7 @@ The inherited Litecoin Core test layout remains in place. Depending on the
 change, useful checks may include:
 
 ```sh
+cd source
 make check
 test/functional/test_runner.py
 ```

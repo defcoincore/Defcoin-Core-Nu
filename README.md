@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/qt/nu/assets/brand/defcoin-core-nu-readme-hero.png" width="720" alt="Defcoin Core Nu logo">
+  <img src="source/src/qt/nu/assets/brand/defcoin-core-nu-readme-hero.png" width="720" alt="Defcoin Core Nu logo">
 </p>
 
 <h1 align="center">Defcoin Core Nu</h1>
@@ -13,9 +13,9 @@
   ·
   <a href="#build-from-source">Build from source</a>
   ·
-  <a href="doc/defcoin-core-nu-technical-guide.md">Technical guide</a>
+  <a href="source/doc/defcoin-core-nu-technical-guide.md">Technical guide</a>
   ·
-  <a href="doc/release-notes/release-notes-26.3.1.md">Release notes</a>
+  <a href="source/doc/release-notes/release-notes-26.3.1.md">Release notes</a>
 </p>
 
 Defcoin is a Scrypt proof-of-work cryptocurrency with a long-running independent
@@ -73,7 +73,7 @@ sync before relying on balances or recent transactions.
 | macOS data directory | `~/Library/Application Support/Defcoin/` |
 
 More detailed chain, seed, wallet, and compatibility notes are in the
-[Defcoin Core Nu Technical Guide](doc/defcoin-core-nu-technical-guide.md).
+[Defcoin Core Nu Technical Guide](source/doc/defcoin-core-nu-technical-guide.md).
 
 ## Build From Source
 
@@ -82,14 +82,18 @@ Start with a fresh clone:
 ```sh
 git clone https://github.com/defcoincore/Defcoin-Core-Nu.git
 cd Defcoin-Core-Nu
+cd source
 ```
+
+The buildable Litecoin-derived source tree is intentionally kept under
+`source/` so the GitHub root can work as a clean product landing page.
 
 Platform prerequisites are documented here:
 
-- [macOS Build Notes](doc/build-osx.md)
-- [Unix Build Notes](doc/build-unix.md)
-- [Windows Build Notes](doc/build-windows.md)
-- [Defcoin Core Nu Technical Guide](doc/defcoin-core-nu-technical-guide.md)
+- [macOS Build Notes](source/doc/build-osx.md)
+- [Unix Build Notes](source/doc/build-unix.md)
+- [Windows Build Notes](source/doc/build-windows.md)
+- [Defcoin Core Nu Technical Guide](source/doc/defcoin-core-nu-technical-guide.md)
 
 Release artifacts are attached to GitHub Releases rather than committed to
 source history.
@@ -110,7 +114,7 @@ Core and Bitcoin Core. See [COPYING](COPYING).
 
 Trademark rights and coin artwork permissions are separate from the software
 license. See
-[license and attribution notices](doc/license-and-attribution-notices.md).
+[license and attribution notices](source/doc/license-and-attribution-notices.md).
 
 Copyright (C) 2014-2026 The Defcoin Core developers.
 
