@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(DefcoinCoreNuQml VERSION 26.3.0 LANGUAGES CXX)
+project(DefcoinCoreNuQml VERSION 26.3.1 LANGUAGES CXX)
 
-set(DEFCOIN_NU_RELEASE_NAME "26.3.0" CACHE STRING "Visible Defcoin Core Nu release label")
+set(DEFCOIN_NU_RELEASE_NAME "26.3.1" CACHE STRING "Visible Defcoin Core Nu release label")
 option(DEFCOIN_NU_ENABLE_HELP "Bundle and expose the Defcoin Core Nu help manual" OFF)
 
 if(APPLE)
@@ -94,8 +94,25 @@ file(GLOB_RECURSE DEFCOIN_NU_QML_FILES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_LIST_DIR}/../qml/qmldir"
 )
 
-file(GLOB_RECURSE DEFCOIN_NU_ASSET_FILES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_LIST_DIR}/../assets/*"
+set(DEFCOIN_NU_RUNTIME_ASSET_FILES
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/brand/DefcoinCoreNu.ico"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/brand/defcoin-nu-coin-stack-hires.png"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/brand/defcoin-nu-icon-1024.png"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/activity.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/copy.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/external-link.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/home.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/isolated.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/lock.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/network.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/node.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/qr.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/receive.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/send.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/settings.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/sync.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/wallet.svg"
+    "${CMAKE_CURRENT_LIST_DIR}/../assets/icons/warning.svg"
 )
 
 file(GLOB_RECURSE DEFCOIN_NU_HELP_FILES CONFIGURE_DEPENDS
@@ -121,18 +138,29 @@ else()
     set(DEFCOIN_NU_HELP_DIR "${DEFCOIN_NU_RESOURCE_DIR}/help/DefcoinCoreNu.help")
 endif()
 
+set(DEFCOIN_NU_ASSET_COPY_COMMANDS)
+foreach(nu_asset IN LISTS DEFCOIN_NU_RUNTIME_ASSET_FILES)
+    file(RELATIVE_PATH nu_asset_rel "${CMAKE_CURRENT_LIST_DIR}/../assets" "${nu_asset}")
+    get_filename_component(nu_asset_rel_dir "${nu_asset_rel}" DIRECTORY)
+    list(APPEND DEFCOIN_NU_ASSET_COPY_COMMANDS
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${DEFCOIN_NU_RESOURCE_DIR}/assets/${nu_asset_rel_dir}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${nu_asset}" "${DEFCOIN_NU_RESOURCE_DIR}/assets/${nu_asset_rel}"
+    )
+endforeach()
+
 add_custom_target(DefcoinCoreNuResources ALL
-    DEPENDS ${DEFCOIN_NU_QML_FILES} ${DEFCOIN_NU_ASSET_FILES}
+    DEPENDS ${DEFCOIN_NU_QML_FILES} ${DEFCOIN_NU_RUNTIME_ASSET_FILES}
     COMMAND ${CMAKE_COMMAND} -E rm -rf "${DEFCOIN_NU_RESOURCE_DIR}"
     COMMAND ${CMAKE_COMMAND} -E make_directory "${DEFCOIN_NU_RESOURCE_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/../qml" "${DEFCOIN_NU_RESOURCE_DIR}/qml"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/../assets" "${DEFCOIN_NU_RESOURCE_DIR}/assets"
+    ${DEFCOIN_NU_ASSET_COPY_COMMANDS}
 )
 
 add_dependencies(DefcoinCoreNuResources DefcoinCoreNu)
 
 if(APPLE)
     add_custom_command(TARGET DefcoinCoreNuResources POST_BUILD
+        COMMAND /bin/chmod u+w "$<TARGET_BUNDLE_DIR:DefcoinCoreNu>/Contents/Info.plist"
         COMMAND ${CMAKE_COMMAND}
             "-DDEFCOIN_NU_RESOURCE_DIR=${DEFCOIN_NU_RESOURCE_DIR}"
             "-DDEFCOIN_NU_RELEASE_NAME=${DEFCOIN_NU_RELEASE_NAME}"
@@ -165,7 +193,7 @@ else()
     add_custom_command(TARGET DefcoinCoreNuResources POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E rm -rf "${DEFCOIN_NU_HELP_DIR}"
         COMMAND ${CMAKE_COMMAND} -E rm -rf "${DEFCOIN_NU_RESOURCE_DIR}/help"
-        COMMENT "Omitting Defcoin Core Nu help for this release"
+        COMMENT "Omitting optional Defcoin Core Nu help resources"
     )
 endif()
 

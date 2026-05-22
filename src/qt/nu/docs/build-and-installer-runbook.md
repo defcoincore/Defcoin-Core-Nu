@@ -26,9 +26,9 @@ QT_WIN="$HOME/Qt/6.10.1/mingw_64"
 Finished deliverables should be staged outside source history:
 
 ```text
-$OUT/Nu-26.3.0/apple-silicon/
-$OUT/Nu-26.3.0/mac-intel/
-$OUT/Nu-26.3.0/windows11-x86_64/
+$OUT/Nu-26.3.1/apple-silicon/
+$OUT/Nu-26.3.1/mac-intel/
+$OUT/Nu-26.3.1/windows11-x86_64/
 ```
 
 ## macOS Qt Quick App
@@ -43,7 +43,7 @@ cmake -S src/qt/nu/app -B build/nu-qml-arm64 \
   -DCMAKE_PREFIX_PATH="$QT_MAC" \
   -DQt6_DIR="$QT_MAC/lib/cmake/Qt6" \
   -DDEFCOIN_NU_BACKEND_BINARY="$SRC/src/defcoind" \
-  -DDEFCOIN_NU_RELEASE_NAME="26.3.0" \
+  -DDEFCOIN_NU_RELEASE_NAME="26.3.1" \
   -DDEFCOIN_NU_ENABLE_HELP=OFF
 
 cmake --build build/nu-qml-arm64 --target DefcoinCoreNuResources -- -j1
@@ -56,8 +56,8 @@ Stage macOS bundles with the local staging helper:
 ```sh
 src/qt/nu/app/stage_macos_distribution.sh \
   "$SRC/build/nu-qml-arm64/DefcoinCoreNu.app" \
-  "$OUT/Nu-26.3.0/apple-silicon" \
-  "26.3.0" \
+  "$OUT/Nu-26.3.1/apple-silicon" \
+  "26.3.1" \
   "macOS-AppleSilicon"
 ```
 
@@ -92,7 +92,7 @@ cd "$SRC"
 cmake -S src/qt/nu/app -B build/nu-qml-win64 \
   -DCMAKE_TOOLCHAIN_FILE="$SRC/depends/cmake/mingw-w64-x86_64.cmake" \
   -DDEFCOIN_NU_BACKEND_BINARY="$WIN_SRC/src/defcoind.exe" \
-  -DDEFCOIN_NU_RELEASE_NAME="26.3.0" \
+  -DDEFCOIN_NU_RELEASE_NAME="26.3.1" \
   -DDEFCOIN_NU_ENABLE_HELP=OFF \
   -DQt6_DIR="$QT_WIN/lib/cmake/Qt6" \
   -DCMAKE_BUILD_TYPE=Release
@@ -109,6 +109,6 @@ directly from the finish page.
 - Do not commit app bundles, installers, DMGs, ZIPs, or generated build trees.
 - Do not commit private credentials, wallet files, RPC cookies, `.env` files,
   or workstation-specific paths.
-- Keep the visible release version as `26.3.0`.
+- Keep the visible release version as `26.3.1`.
 - Build IDs may include UTC timestamp, commit, and dirty/clean state, but
   should not expose local path or machine details.

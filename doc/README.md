@@ -5,7 +5,7 @@ Setup
 ---------------------
 Defcoin Core is the original Defcoin client and it builds the backbone of the network. It downloads and, by default, stores the entire history of Defcoin transactions, which requires approximately 22 gigabytes of disk space. Depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
-The current Nu release line is Defcoin Core Nu `26.3.0`, codename
+The current Nu release line is Defcoin Core Nu `26.3.1`, codename
 `Core Memories`.
 
 Running
@@ -48,7 +48,7 @@ The following are developer notes on how to build Defcoin Core on your native pl
 Defcoin-specific release documentation:
 
 - [Defcoin Core Nu Technical Guide](defcoin-core-nu-technical-guide.md)
-- [Defcoin Core Nu 26.3.0 Release Notes](release-notes/release-notes-26.3.0.md)
+- [Defcoin Core Nu 26.3.1 Release Notes](release-notes/release-notes-26.3.1.md)
 - [License And Attribution Notices](license-and-attribution-notices.md)
 
 Development

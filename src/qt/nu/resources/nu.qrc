@@ -46,11 +46,6 @@
         <file>../assets/icons/wallet.svg</file>
         <file>../assets/icons/warning.svg</file>
         <file>../assets/brand/defcoin-nu-icon-1024.png</file>
-        <file>../assets/brand/defcoin-legacy-coin-stack.png</file>
         <file>../assets/brand/defcoin-nu-coin-stack-hires.png</file>
-        <file>../assets/brand/defcoin-nu-mark-104.png</file>
-        <file>../assets/brand/defcoin-nu-mark-2048.png</file>
-        <file>../assets/brand/defcoin-nu-splash-1600.png</file>
-        <file>../assets/brand/receive-address-demo-qr.png</file>
     </qresource>
 </RCC>

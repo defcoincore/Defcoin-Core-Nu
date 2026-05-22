@@ -9,7 +9,7 @@ places.
 
 ## Overview
 
-Defcoin Core Nu `26.3.0`, codename `Core Memories`, is a full-node desktop
+Defcoin Core Nu `26.3.1`, codename `Core Memories`, is a full-node desktop
 wallet for the Defcoin network. It is derived from Litecoin Core `v0.21.5.5`
 and keeps the inherited Litecoin Core engine where that behavior is still
 correct for Defcoin. The Nu release adds a Qt Quick desktop shell, bundled
@@ -28,7 +28,7 @@ not be committed to source history.
 
 ## Release Identity
 
-- Release: `26.3.0`
+- Release: `26.3.1`
 - Codename: `Core Memories`
 - Backend baseline: Litecoin Core `v0.21.5.5`
 - Proof of work: Scrypt
@@ -38,9 +38,9 @@ not be committed to source history.
 - macOS bundle namespace: `org.defcoincore`
 
 The inherited numeric `CLIENT_VERSION` remains available where the upstream
-code expects it, but the public Defcoin Core Nu release identity is `26.3.0`.
+code expects it, but the public Defcoin Core Nu release identity is `26.3.1`.
 The peer User-Agent for this release should report a Defcoin prefix and the
-Nu release version, for example `/DefcoinCoreNu:26.3.0/`.
+Nu release version, for example `/DefcoinCoreNu:26.3.1/`.
 
 ## Architecture
 
@@ -154,10 +154,6 @@ Mainnet DNS seeds:
 - `seed.defcoincore.org`
 - `seed.defcoin-ng.org`
 
-`seed.defcoin.io` is listed only as a seed address operated by another party.
-It is not used as a bundle identifier, reverse-DNS namespace, or ownership
-signal for this project.
-
 macOS bundle and helper identifiers use the `org.defcoincore` namespace, for
 example:
 
@@ -261,7 +257,7 @@ cmake -S src/qt/nu/app -B build/nu-qml-macos \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_OSX_ARCHITECTURES=arm64 \
   -DDEFCOIN_NU_BACKEND_BINARY="$SRC/src/defcoind" \
-  -DDEFCOIN_NU_RELEASE_NAME="26.3.0" \
+  -DDEFCOIN_NU_RELEASE_NAME="26.3.1" \
   -DDEFCOIN_NU_ENABLE_HELP=OFF
 
 cmake --build build/nu-qml-macos --target DefcoinCoreNuResources -- -j1
@@ -277,7 +273,7 @@ installers, disk images, ZIP files, or generated signing material.
 The Apple Silicon Nu release disk image is named:
 
 ```text
-Defcoin-Core-Nu-v26.3.0-macOS-AppleSilicon.dmg
+Defcoin-Core-Nu-v26.3.1-macOS-AppleSilicon.dmg
 ```
 
 ## Release And Publication Process
@@ -292,7 +288,7 @@ Before publishing:
 - seed lists include the five mainnet seed hosts above;
 - bundle metadata uses `org.defcoincore`;
 - `getnetworkinfo` reports a Defcoin User-Agent beginning with
-  `/DefcoinCoreNu:26.3.0/`;
+  `/DefcoinCoreNu:26.3.1/`;
 - platform packages are built from clean release inputs;
 - checksums and signatures are generated for release artifacts;
 - release notes describe only what ships in the release being published.
@@ -329,7 +325,7 @@ network-message parsing, peer filtering, seed handling, and release signing.
 
 - `README.md`: project overview and common build entry points.
 - `doc/README.md`: index of inherited and Defcoin-specific documentation.
-- `doc/release-notes/release-notes-26.3.0.md`: current release notes.
+- `doc/release-notes/release-notes-26.3.1.md`: current release notes.
 - `doc/license-and-attribution-notices.md`: license, dependency, artwork, and
   attribution notices.
 - `src/qt/nu/docs/`: Nu frontend implementation notes for developers.

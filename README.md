@@ -2,7 +2,7 @@ Defcoin Core Nu
 ===============
 
 Defcoin Core Nu is a full-node desktop wallet for the Defcoin network. The
-26.3.0 release, codename `Core Memories`, is derived from Litecoin Core
+26.3.1 release, codename `Core Memories`, is derived from Litecoin Core
 v0.21.5.5 and keeps the Defcoin chain rules, wallet data directory, and
 Litecoin-derived backend while adding a Qt Quick desktop interface inspired by
 Nothing Company product design and the Bitcoin Design Community.
@@ -11,15 +11,15 @@ Downloads
 ---------
 
 Current release binaries and installers are attached to the
-[Defcoin Core Nu 26.3.0 "Core Memories" GitHub release](https://github.com/defcoincore/Defcoin-Core-Nu/releases/tag/v26.3.0).
+[Defcoin Core Nu 26.3.1 "Core Memories" GitHub release](https://github.com/defcoincore/Defcoin-Core-Nu/releases/tag/v26.3.1).
 
 | Platform | Download |
 | --- | --- |
-| macOS Apple Silicon | [Defcoin-Core-Nu-v26.3.0-macOS-AppleSilicon.dmg](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.0/Defcoin-Core-Nu-v26.3.0-macOS-AppleSilicon.dmg) |
-| macOS Intel | [Defcoin-Core-Nu-v26.3.0-macOS-Intel.dmg](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.0/Defcoin-Core-Nu-v26.3.0-macOS-Intel.dmg) |
-| Windows 11 x86_64 portable | [Defcoin-Core-Nu-v26.3.0-Windows11-x86_64-portable.zip](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.0/Defcoin-Core-Nu-v26.3.0-Windows11-x86_64-portable.zip) |
-| Windows 11 x86_64 installer | [Defcoin-Core-Nu-v26.3.0-Windows11-x86_64-Setup.exe](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.0/Defcoin-Core-Nu-v26.3.0-Windows11-x86_64-Setup.exe) |
-| Checksums | [SHA256SUMS.txt](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.0/SHA256SUMS.txt) |
+| macOS Apple Silicon | [Defcoin-Core-Nu-v26.3.1-macOS-AppleSilicon.dmg](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-Core-Nu-v26.3.1-macOS-AppleSilicon.dmg) |
+| macOS Intel | [Defcoin-Core-Nu-v26.3.1-macOS-Intel.dmg](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-Core-Nu-v26.3.1-macOS-Intel.dmg) |
+| Windows 11 x86_64 portable | [Defcoin-Core-Nu-v26.3.1-Windows11-x86_64-portable.zip](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-Core-Nu-v26.3.1-Windows11-x86_64-portable.zip) |
+| Windows 11 x86_64 installer | [Defcoin-Core-Nu-v26.3.1-Windows11-x86_64-Setup.exe](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-Core-Nu-v26.3.1-Windows11-x86_64-Setup.exe) |
+| Checksums | [SHA256SUMS.txt](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/SHA256SUMS.txt) |
 
 Note: The macOS Intel build is provided for compatibility but has not yet been
 tested on Intel Mac hardware.

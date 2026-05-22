@@ -52,7 +52,7 @@ ApplicationWindow {
     function showHelpPage(windowTitle, page) {
         if (!root.helpEnabled) {
             messageDialog.title = "Help not included"
-            messageDialog.text = "This Defcoin Core Nu build does not include the Help manual. Build notes are available from About."
+            messageDialog.text = "Build notes are available from About in this build."
             messageDialog.open()
             return
         }

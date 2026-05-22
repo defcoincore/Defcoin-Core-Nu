@@ -1,7 +1,9 @@
-# Nu Assets
+# Nu Runtime Assets
 
-Nu assets are intentionally simple SVGs with strong geometry, limited color,
-and readable silhouettes at small sizes.
+Nu runtime assets are intentionally limited to the icons and brand images used
+by the Qt Quick shell. The build copies an explicit allowlist into app bundles
+so stale drafts, unrelated theme packs, and generated icon intermediates do not
+ship with Nu packages.
 
 ## Palette
 
@@ -13,5 +15,3 @@ and readable silhouettes at small sizes.
 - isolated red: `#D93025`
 
 The SVG files use literal colors for now so they can be reviewed in isolation.
-When the QML shell is wired into the application, icons should either be
-generated from theme tokens or rendered through a tinting component.

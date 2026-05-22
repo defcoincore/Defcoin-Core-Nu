@@ -1,8 +1,23 @@
 # Defcoin Core Changelog
 
+## 26.3.1 Core Memories
+
+Defcoin Core Nu `26.3.1` is a cleanup release for the current Nu line.
+
+### Changed
+
+- Nu packaging now copies only the runtime assets used by the Qt Quick shell
+  instead of copying every file under the Nu asset tree.
+- Public docs and in-app build notes describe only the current release.
+
+### Removed
+
+- Removed unused Nu image/icon drafts and Finder metadata that could leak stale
+  or unrelated visual assets into app packages.
+
 ## 26.3.0 Core Memories
 
-Defcoin Core Nu `26.3.0`, codename `Core Memories`, is the current public Nu
+Defcoin Core Nu `26.3.0`, codename `Core Memories`, established the public Nu
 release track.
 
 ### Added
