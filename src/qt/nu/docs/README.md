@@ -45,9 +45,5 @@ wallet keys, signing, validation, and networking out of QML.
 See `build-and-installer-runbook.md` for the current local build, staging,
 installer, cleanup, and verification procedure.
 
-See `bitcoin-core-qml-comparison.md` for the current investigation report on
-Bitcoin Core QML ideas that may be worth adopting later.
-
-See `roadmap-2026.3-help-manual.md` for the held help-manual inventory
-and cleanup checklist. Nu 26.3.0 intentionally ships without the full Help
-manual and keeps only About Build Notes in the app.
+See `bitcoin-core-qml-comparison.md` for the architecture comparison with
+Bitcoin Core QML.

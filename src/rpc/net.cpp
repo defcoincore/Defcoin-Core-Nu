@@ -874,7 +874,7 @@ static RPCHelpMan setonlydefcoinuseragents()
     return RPCHelpMan{"setonlydefcoinuseragents",
                 "\nEnable or disable the Defcoin peer user-agent prefix filter.\n",
                 {
-                    {"enabled", RPCArg::Type::BOOL, RPCArg::Optional::NO, "true to accept only peers whose user agent begins with Defcoin, false to accept all peers"},
+                    {"enabled", RPCArg::Type::BOOL, RPCArg::Optional::NO, "true to accept only peers whose user agent begins with /Defcoin, false to accept all peers"},
                 },
                 RPCResult{RPCResult::Type::BOOL, "", "The filter state after applying the request"},
                 RPCExamples{

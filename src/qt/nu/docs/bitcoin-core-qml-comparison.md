@@ -30,8 +30,7 @@ wallet storage, private-key handling, and peer networking. The tradeoff is that
 Nu must add careful startup diagnostics, backend runtime bundling, RPC error
 handling, and local model caching.
 
-Recommendation: keep Nu's separate-process model for this release, but consider
-a future typed C++ model layer above RPC so QML does not manipulate raw arrays.
+Nu keeps the separate-process model for this release.
 
 ## Frontend Architecture
 
@@ -47,9 +46,7 @@ models cleanly:
 - `qml/pages`: route-level pages for node, wallet, onboarding, and settings.
 
 Nu already mirrors the first part of this split with `Components`, `Shell`,
-`Theme`, and `Views`. The next useful migration is typed C++ table/list models
-for Activity and Peers so sorting, updates, and sizing are no longer driven by
-JavaScript arrays.
+`Theme`, and `Views`.
 
 ## Models And Tables
 
@@ -59,9 +56,7 @@ peer order changes, and otherwise emits `dataChanged`. `PeerListSortProxy`
 sorts by raw peer fields, not formatted display strings.
 
 Nu now has typed sort functions and font-metrics column sizing, but rows are
-still QML arrays from RPC results. The useful concept to port later is a Nu
-`QAbstractTableModel` or `QAbstractListModel` per major table with raw sort
-roles and formatted display roles.
+still QML arrays from RPC results.
 
 ## Peers
 
@@ -70,23 +65,13 @@ and sortable; details are a model object created from the selected peer's stats.
 It also includes disconnect and ban operations on the node model.
 
 Nu currently keeps the peer view table-first and does not reintroduce the
-inspector pane. That matches the current Nu design goal. Future useful ports:
-
-- C++ proxy sorting for IP, ping, bytes, and user agent.
-- Optional disconnect/ban actions if the Nu backend exposes safe RPC wrappers.
-- Event-driven refresh that avoids full table replacement on every timer tick.
+inspector pane. That matches the current Nu design goal.
 
 ## Network Traffic
 
 Bitcoin Core QML uses a `NetworkTrafficTower` model and graph components. It
 tracks total bytes and smoothed rates in C++ rather than asking QML to derive
-all graph state. Nu already samples `getnettotals` and avoids repeated zero
-samples. Future useful ports:
-
-- Move moving-average and min/max calculations into C++.
-- Keep graph data as a bounded model with roles for local time, received rate,
-  sent rate, and peak markers.
-- Avoid QML-side recalculation during paint.
+all graph state. Nu samples `getnettotals` and avoids repeated zero samples.
 
 ## Debug Log
 
@@ -105,9 +90,8 @@ fee preview, coin selection, backups, wallet creation/import, and external
 signer flows. Litecoin Core v0.21.5.5 Qt exposes similar wallet functions
 through mature Widgets dialogs.
 
-Nu now exposes the core safe flows directly: send, receive, activity, backup,
+Nu exposes the core safe flows directly: send, receive, activity, backup,
 encrypt, change passphrase, sign/verify message, and PSBT load/sign/finalize.
-Remaining future work is richer coin control and multi-wallet management.
 
 ## Accessibility And Focus
 
@@ -118,21 +102,8 @@ helps keyboard users and makes tooltip-on-focus behavior discoverable.
 
 ## Help Flow
 
-Bitcoin Core QML currently focuses on in-app pages and settings rather than a
-native OS help book. Nu should keep the native macOS Help bundle and in-app
-Windows help because the user requested platform-appropriate help behavior and
-offline documentation.
-
-## Findings To Consider Later
-
-1. Add typed C++ table/list models for Activity and Peers.
-2. Add a proxy model for table sorting instead of sorting QML arrays.
-3. Move traffic smoothing and peak detection into C++.
-4. Add a file-watcher/concurrent log model for Diagnostics > Log.
-5. Add a typed wallet model for wallet lock state, balances, labels, and
-   transaction updates.
-6. Consider direct `interfaces::Node` integration only if Nu abandons the
-   separate-process backend boundary.
+Bitcoin Core QML focuses on in-app pages and settings rather than a native OS
+help book. Nu 26.3.0 keeps release information in About and Build Notes.
 
 ## Why Reference Bitcoin Core QML If No Code Is Copied?
 

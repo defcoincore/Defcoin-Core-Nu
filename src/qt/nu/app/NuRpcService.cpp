@@ -182,7 +182,8 @@ QStringList configuredSeedDomains()
         QStringLiteral("seed.defcoin.io"),
         QStringLiteral("seed.defcoin.mikej.tech"),
         QStringLiteral("seed.defcoin.dc903.org"),
-        QStringLiteral("seed.defcoincore.org")
+        QStringLiteral("seed.defcoincore.org"),
+        QStringLiteral("seed.defcoin-ng.org")
     };
 }
 
@@ -699,7 +700,8 @@ bool NuRpcService::ensureBackendStarted()
     args << QStringLiteral("-seednode=seed.defcoin.io")
          << QStringLiteral("-seednode=seed.defcoin.mikej.tech")
          << QStringLiteral("-seednode=seed.defcoin.dc903.org:10332")
-         << QStringLiteral("-seednode=seed.defcoincore.org");
+         << QStringLiteral("-seednode=seed.defcoincore.org")
+         << QStringLiteral("-seednode=seed.defcoin-ng.org");
 
     if (m_backend_process == nullptr) {
         m_backend_process = new QProcess(this);

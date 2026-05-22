@@ -124,15 +124,15 @@ rm -rf "$APP/Contents/Resources/themes" "$APP/Contents/Resources/custom_themes"
 if [ "$DEFCOIN_PACKAGE_THEMES" = "0" ]; then
   echo "  standard package: theme resources omitted"
   PRODUCT_NAME="Defcoin Core"
-  SHORT_VERSION="2026.1"
-  GET_INFO_STRING="Defcoin Core 2026.1"
+  SHORT_VERSION="26.3.0"
+  GET_INFO_STRING="Defcoin Core 26.3.0"
   VOLUME_NAME="Defcoin Core"
 else
   ditto "src/qt/res/themes" "$APP/Contents/Resources/themes"
-  PRODUCT_NAME="Defcoin Core DC34 Edition"
-  SHORT_VERSION="2026.1 DC34 Edition"
-  GET_INFO_STRING="Defcoin Core DC34 Edition 2026.1, Codename: Token Jester"
-  VOLUME_NAME="Defcoin Core DC34 Edition"
+  PRODUCT_NAME="Defcoin Core Special Edition"
+  SHORT_VERSION="26.3.0 Special Edition"
+  GET_INFO_STRING="Defcoin Core Special Edition 26.3.0"
+  VOLUME_NAME="Defcoin Core Special Edition"
 fi
 
 echo "+ Normalizing Defcoin bundle metadata"
@@ -343,7 +343,7 @@ if not is_fun:
         shade = int(247 - 10 * (y / max(rh - 1, 1)))
         draw.line([(0, y), (rw, y)], fill=(shade, min(shade + 2, 255), min(shade + 5, 255), 255))
 else:
-    # DC34 Edition: reserved cyberpunk-lite geometry using the DC34 palette.
+    # Special Edition: reserved cyberpunk-lite geometry using the event palette.
     dc_blue = (45, 129, 180, 255)
     dc_teal = (139, 203, 193, 255)
     dc_yellow = (216, 201, 52, 255)
@@ -427,8 +427,8 @@ title_shadow = (0, 0, 0, 75) if not is_fun else (0, 0, 0, 210)
 draw.text((title_x + sx(2), title_y + sx(2)), "Defcoin Core", font=title_font, fill=title_shadow)
 draw.text((title_x, title_y), "Defcoin Core", font=title_font, fill=title_color)
 if is_fun:
-    draw.text((title_x + sx(4), title_y + sx(45)), "DC34 Edition", font=subtitle_font, fill=(0, 0, 0, 160))
-    draw.text((title_x + sx(2), title_y + sx(43)), "DC34 Edition", font=subtitle_font, fill=(216, 201, 52, 240))
+    draw.text((title_x + sx(4), title_y + sx(45)), "Special Edition", font=subtitle_font, fill=(0, 0, 0, 160))
+    draw.text((title_x + sx(2), title_y + sx(43)), "Special Edition", font=subtitle_font, fill=(216, 201, 52, 240))
 
 arrow_center_y = sx(icon_y - 4)
 arrow_mid_x = sx((app_x + folder_x) / 2.0)

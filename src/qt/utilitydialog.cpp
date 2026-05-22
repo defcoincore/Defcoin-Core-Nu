@@ -75,8 +75,9 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, Mode mode) :
             "<br><b>" + tr("Mainnet seed addresses") + "</b><br>"
             "seed.defcoin.io<br>"
             "seed.defcoin.mikej.tech<br>"
-            "seed.defcoin.dc903.org<br>"
-            "seed.defcoincore.org";
+            "seed.defcoin.dc903.org:10332<br>"
+            "seed.defcoincore.org<br>"
+            "seed.defcoin-ng.org";
 
         ui->aboutMessage->setTextFormat(Qt::RichText);
         ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -84,8 +85,9 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, Mode mode) :
                "\nMainnet seed addresses:\n"
                "seed.defcoin.io\n"
                "seed.defcoin.mikej.tech\n"
-               "seed.defcoin.dc903.org\n"
-               "seed.defcoincore.org";
+               "seed.defcoin.dc903.org:10332\n"
+               "seed.defcoincore.org\n"
+               "seed.defcoin-ng.org";
         ui->aboutMessage->setText(version + "<br>" + codename + "<br><br>" + licenseInfoHTML + seedInfoHTML);
         ui->aboutMessage->setWordWrap(true);
         ui->helpMessage->setVisible(false);
@@ -109,7 +111,7 @@ dd { margin-bottom: 6px; }
 <p>Use Defcoin Core when you want the wallet and the validating node on your own computer. The wallet view manages keys and transactions. The node view shows synchronization, peer connectivity, traffic, latency, and local diagnostics.</p>
 <p>Create or open wallets carefully. Back up <b>wallet.dat</b> before upgrades, imports, rescans, recovery work, or moving to another computer. If the wallet is encrypted, keep the passphrase offline and test backups before relying on them.</p>
 <p>To receive DFC, create a receiving address and share it with the sender. To send DFC, enter the destination, amount, and fee settings, then review the confirmation dialog before broadcasting. Confirmations show how deeply a transaction is buried in the blockchain.</p>
-<p>Historically, Defcoin has been used by its community online and in DC34-related in-person contexts, including badge-oriented experiments and paper-wallet style exchanges. This is community history, not a current official DC34 endorsement.</p>
+<p>Historically, Defcoin has been used by its community online and in in-person contexts, including badge-oriented experiments and paper-wallet style exchanges. This is community history, not an endorsement by any separate event or trademark owner.</p>
 
 <h3>Main Wallet Pages</h3>
 <dl>
@@ -147,10 +149,10 @@ dd { margin-bottom: 6px; }
 <dt>Information</dt><dd>Shows client version, user agent, data directory, blocks directory, connections, mempool size, chain height, and verification progress.</dd>
 <dt>Console</dt><dd>Runs RPC commands. Use it only when you understand the command because RPC can change wallet or node state. The console is powerful and intentionally warns against pasting untrusted commands.</dd>
 <dt>Network Traffic</dt><dd>Charts received bytes, sent bytes, recent average latency, peer-average latency, optional moving averages, and visible time ranges. Lower latency means a peer set is responding faster.</dd>
-<dt>Peers</dt><dd>Lists connected, inactive, local, and optionally banned peers. Standard columns include Node ID, Direction, IP Address:Port, Recent Ping, Sent, Rec'd, and User Agent. DC34 Edition can add Geo, City/St, Mapped AS, AS Name, AS Hosting Company, Traffic Health, and other diagnostic columns.</dd>
+<dt>Peers</dt><dd>Lists connected, inactive, local, and optionally banned peers. Standard columns include Node ID, Direction, IP Address:Port, Recent Ping, Sent, Rec'd, and User Agent. Detailed diagnostic builds can add Geo, City/St, Mapped AS, AS Name, AS Hosting Company, Traffic Health, and other diagnostic columns.</dd>
 <dt>Traffic Health</dt><dd>A compact heartbeat-style graph for each peer. It summarizes recent ping timing and traffic activity. Green generally means faster relative response, amber moderate response, and red slower response.</dd>
 <dt>Lookup Geo</dt><dd>Best-effort city and state/region lookup. Public peers use their IP address; local and LAN rows use this node's public WAN address. Defcoin Core uses <a href="https://ip-api.com/docs">ip-api.com</a> for this lookup, caches results in memory for the Node window session, skips private/LAN/Tor/I2P addresses, and throttles requests below the public free-service limit.</dd>
-<dt>Lookup Mapped AS</dt><dd>DC34 Edition only. Looks up public peer Autonomous System information using Team Cymru's DNS-based <a href="https://www.team-cymru.com/ip-asn-mapping">IP to ASN Mapping</a>. Defcoin Core uses cached DNS TXT answers, skips private/LAN/Tor/I2P addresses, and keeps lookup concurrency low. The AS Name and AS Hosting Company fields are derived from Team Cymru's AS-name TXT response when available.</dd>
+<dt>Lookup Mapped AS</dt><dd>Looks up public peer Autonomous System information using Team Cymru's DNS-based <a href="https://www.team-cymru.com/ip-asn-mapping">IP to ASN Mapping</a>. Defcoin Core uses cached DNS TXT answers, skips private/LAN/Tor/I2P addresses, and keeps lookup concurrency low. The AS Name and AS Hosting Company fields are derived from Team Cymru's AS-name TXT response when available.</dd>
 <dt>Peer lookup sources</dt><dd>Geo and AS lookups send the peer's public IP address, or this node's public WAN address for local/LAN rows, to the lookup provider. Review <a href="https://ip-api.com/docs/legal">ip-api.com legal/privacy information</a> and <a href="https://www.team-cymru.com/ip-asn-mapping">Team Cymru's IP-ASN mapping documentation</a> before enabling these diagnostics on sensitive networks.</dd>
 <dt>Trace Route</dt><dd>Opens a separate traceroute window for the selected public peer. This uses system networking tools and is diagnostic only.</dd>
 <dt>Peer Map</dt><dd>Visualizes peers with usable location data on an animated globe when this build includes the map view. Real peer locations are approximate diagnostics, and remote-to-remote traffic lines are illustrative because this node cannot directly measure traffic exchanged between two other peers.</dd>

@@ -2271,13 +2271,13 @@ private:
         bool defcon_mode = !m_nodes.isEmpty();
         bool demo_mode = !m_nodes.isEmpty();
         for (const PeerMapNode& node : m_nodes) {
-            if (node.user_agent != QLatin1String("DC34 Groups")) {
+            if (node.user_agent != QLatin1String("Meetup Groups")) {
                 defcon_mode = false;
             }
             if (node.user_agent != QLatin1String("/DefcoinCore:demo/")) {
                 demo_mode = false;
             }
-            if (node.user_agent != QLatin1String("DC34 Groups") && node.user_agent != QLatin1String("/DefcoinCore:demo/")) {
+            if (node.user_agent != QLatin1String("Meetup Groups") && node.user_agent != QLatin1String("/DefcoinCore:demo/")) {
                 illustrative_mode = false;
                 break;
             }
@@ -2703,13 +2703,13 @@ public:
         source_layout->setSpacing(4);
         m_source_group = new QButtonGroup(m_source_panel);
         m_real_nodes_radio = new QRadioButton(tr("Show connected peers"), m_source_panel);
-        m_defcon_meetups_radio = new QRadioButton(tr("Show DC34 meetup cities"), m_source_panel);
+        m_defcon_meetups_radio = new QRadioButton(tr("Show meetup cities"), m_source_panel);
         m_demo_locations_radio = new QRadioButton(tr("Popular Data Centers Around the World"), m_source_panel);
         m_source_group->addButton(m_real_nodes_radio, static_cast<int>(PeerMapDataSource::RealNodes));
         m_source_group->addButton(m_defcon_meetups_radio, static_cast<int>(PeerMapDataSource::DefconMeetups));
         m_source_group->addButton(m_demo_locations_radio, static_cast<int>(PeerMapDataSource::DemoLocations));
         m_real_nodes_radio->setChecked(true);
-        m_defcon_meetups_radio->setToolTip(tr("Use a curated presentation list of DC34 Groups and meetup cities."));
+        m_defcon_meetups_radio->setToolTip(tr("Use a curated presentation list of groups and meetup cities."));
         m_demo_locations_radio->setToolTip(tr("Use a curated global list of 200 major data-center markets for route and rendering tests."));
         source_layout->addWidget(m_real_nodes_radio);
         source_layout->addWidget(m_defcon_meetups_radio);
@@ -2961,7 +2961,7 @@ private:
             node.ip = DefconMeetupPeers::groupName(meetup);
             node.city_state = DefconMeetupPeers::cityState(meetup);
             node.map_label = tr("%1, %2").arg(node.ip, node.city_state);
-            node.user_agent = QStringLiteral("DC34 Groups");
+            node.user_agent = QStringLiteral("Meetup Groups");
             node.website = DefconMeetupPeers::website(meetup);
             node.has_coordinates = true;
             node.latitude = meetup.latitude;
@@ -3091,7 +3091,7 @@ private:
                                                              << source_column
                                                              << tr("City, St"));
         m_sidebar_title->setText(m_data_source == PeerMapDataSource::RealNodes ? tr("Traveling Found Node Locations") :
-                                 (m_data_source == PeerMapDataSource::DefconMeetups ? tr("DC34 Meetup Route") : tr("Popular Data Centers Around the World")));
+                                 (m_data_source == PeerMapDataSource::DefconMeetups ? tr("Meetup Route") : tr("Popular Data Centers Around the World")));
         m_node_list->setRowCount(m_sidebar_route_nodes.size());
         for (int row = 0; row < m_sidebar_route_nodes.size(); ++row) {
             const int node_index = m_sidebar_route_nodes.at(row);
@@ -4495,7 +4495,7 @@ RPCConsole::RPCConsole(interfaces::Node& node, const PlatformStyle *_platformSty
             detail_grid->addWidget(value, row, 1);
         };
 #if ENABLE_DEFCOIN_FUN_UI
-        add_detail_row(18, tr("UniqID"), QStringLiteral("peerInspectorUniqueId"), tr("DC34 Edition session identifier that reuses the same number for the same IP address, port, and node fingerprint when possible."));
+        add_detail_row(18, tr("UniqID"), QStringLiteral("peerInspectorUniqueId"), tr("Session identifier that reuses the same number for the same IP address, port, and node fingerprint when possible."));
         add_detail_row(19, tr("Fingerprint"), QStringLiteral("peerInspectorFingerprint"), tr("Best-effort node fingerprint derived from protocol version, services, and user agent. It is not cryptographic identity."));
         add_detail_row(20, tr("Node"), QStringLiteral("peerInspectorNode"));
         add_detail_row(21, tr("Port"), QStringLiteral("peerInspectorPort"));
@@ -6687,7 +6687,7 @@ int RPCConsole::peerColumnDefaultWidth(int column) const
         break;
     case PeerTableModel::Port: samples << QStringLiteral("65535") << QStringLiteral("10332"); break;
     case PeerTableModel::Fqdn: samples << QStringLiteral("66.42.91.225.vultrusercontent.com") << QStringLiteral("c-73-52-182-204.hsd1.ut.comcast.net") << QStringLiteral("[NA: LAN]"); break;
-    case PeerTableModel::CustomHostname: samples << QStringLiteral("seed.defcoin.io") << QStringLiteral("Davids-Mac-mini.local [macOS 26.4]") << QStringLiteral("WINDOWS11"); break;
+    case PeerTableModel::CustomHostname: samples << QStringLiteral("seed.defcoin.io") << QStringLiteral("workstation.local") << QStringLiteral("desktop.local"); break;
     case PeerTableModel::Version: samples << QStringLiteral("70017"); break;
     case PeerTableModel::Services: samples << QStringLiteral("N B W CF"); break;
     case PeerTableModel::AvgPing:

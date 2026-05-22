@@ -27,8 +27,8 @@ the standard Defcoin build:
 - Defcoin address and amount naming, including DFC display strings.
 - Defcoin branding and bundle identity.
 - Defcoin peer policy. The Nu rule is now simple: accepted peer user agents
-  must begin with `Defcoin`, ignoring case. The older `DFC` prefix is no longer
-  accepted or documented in Nu.
+  must begin with `/Defcoin`, ignoring case after the leading slash is removed.
+  Short ticker-style prefixes are not accepted or documented in Nu.
 - Inherited Litecoin features that remain unavailable in Defcoin stay disabled:
   BIP65/CLTV, BIP66 strict DER signatures, CSV, SegWit activation, Taproot,
   MWEB, and Signet.
@@ -50,8 +50,8 @@ The macOS default data directory remains:
 ~/Library/Application Support/Defcoin
 ```
 
-This lets Nu use the same blockchain and wallet data already maintained by the
-standard/DC34 Defcoin Core builds on the same machine.
+This lets Nu use the same blockchain and wallet data already maintained by
+other Defcoin Core builds on the same machine.
 
 ## Current RPC Coverage
 

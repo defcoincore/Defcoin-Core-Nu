@@ -19,6 +19,9 @@ static const uint8_t chainparams_seed_main[] = {
     // seed.defcoin.dc903.org
     // 50.116.19.40:10332
     0x01,0x04,0x32,0x74,0x13,0x28,0x28,0x5c,
+
+    // seed.defcoin-ng.org is kept as a DNS seed in chainparams.cpp. It is not
+    // included here as a fixed seed until a stable endpoint is confirmed.
 };
 
 static const uint8_t chainparams_seed_test[] = {

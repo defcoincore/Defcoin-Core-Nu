@@ -302,7 +302,7 @@ ColumnLayout {
                 }
 
                 NuCheckBox {
-                    text: "Only show and accept peers whose user agent begins with Defcoin"
+                    text: "Only show and accept peers whose user agent begins with /Defcoin"
                     checked: NuService.onlyDefcoinUserAgents
                     onToggled: NuService.onlyDefcoinUserAgents = checked
                 }

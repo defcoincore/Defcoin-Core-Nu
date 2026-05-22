@@ -150,6 +150,7 @@ public:
         vSeeds.emplace_back("seed.defcoin.mikej.tech");
         vSeeds.emplace_back("seed.defcoin.dc903.org:10332");
         vSeeds.emplace_back("seed.defcoincore.org");
+        vSeeds.emplace_back("seed.defcoin-ng.org");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,30);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);

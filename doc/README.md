@@ -29,8 +29,8 @@ Drag Defcoin Core to your applications folder, and then run Defcoin Core.
 
 ### Need Help?
 
-Use the in-app Help manual for wallet and node basics. For developer and
-release-preparation notes, start with the Defcoin-specific documents below.
+For wallet and node basics, start with the app's About and Build Notes, then
+use the developer documents below for implementation details.
 
 Building
 ---------------------
@@ -45,18 +45,11 @@ The following are developer notes on how to build Defcoin Core on your native pl
 - [NetBSD Build Notes](build-netbsd.md)
 - [Gitian Building Guide (External Link)](https://github.com/bitcoin-core/docs/blob/master/gitian-building.md)
 
-Defcoin-specific build and release preparation:
+Defcoin-specific release documentation:
 
-- [Defcoin Core vs. Litecoin Core](defcoin-core-vs-litecoin-core.md)
-- [Defcoin Build Deviation Matrix](defcoin-build-deviation-matrix.md)
-- [Defcoin Standard Conversion Notes](defcoin-litecoin-conversion-notes.md)
-- [Defcoin Modern Build Guide](defcoin-modern-build-guide.md)
-- [Defcoin Core Nu GitHub Notes](defcoin-core-nu-github-notes.md)
-- [Litecoin Upstream Comparison](litecoin-upstream-comparison-standard.md)
-- [GitHub Publication Checklist](github-publication-checklist.md)
-- [Defcoin 2026.1 Development Checkpoint](defcoin-2026.1-development-checkpoint.md)
-- [Defcoin Unfinished Work Log](defcoin-unfinished-work-log.md)
-- [Defcoin Core Help Manual](defcoin-core-help-manual.md)
+- [Defcoin Core Nu Technical Guide](defcoin-core-nu-technical-guide.md)
+- [Defcoin Core Nu 26.3.0 Release Notes](release-notes/release-notes-26.3.0.md)
+- [License And Attribution Notices](license-and-attribution-notices.md)
 
 Development
 ---------------------
@@ -77,8 +70,9 @@ The Defcoin repo's [root README](/README.md) contains relevant information on th
 - [Benchmarking](benchmarking.md)
 
 ### Resources
-* Discuss on the [DefcoinTalk](https://defcointalk.io/) forums.
-* Discuss general Defcoin development on #defcoin-dev on Freenode. If you don't have an IRC client, use [webchat here](https://webchat.freenode.net/#defcoin-dev).
+
+- Source repository: [DefcoinCore/Defcoin-Core-Nu](https://github.com/DefcoinCore/Defcoin-Core-Nu)
+- Community forum: [DefcoinTalk](https://defcointalk.io/)
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)
