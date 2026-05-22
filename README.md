@@ -7,6 +7,23 @@ v0.21.5.5 and keeps the Defcoin chain rules, wallet data directory, and
 Litecoin-derived backend while adding a Qt Quick desktop interface inspired by
 Nothing Company product design and the Bitcoin Design Community.
 
+Downloads
+---------
+
+Current release binaries and installers are attached to the
+[Defcoin Core Nu 26.3.0 "Core Memories" GitHub release](https://github.com/defcoincore/Defcoin-Core-Nu/releases/tag/v26.3.0).
+
+| Platform | Download |
+| --- | --- |
+| macOS Apple Silicon | [Defcoin-Core-Nu-v26.3.0-macOS-AppleSilicon.dmg](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.0/Defcoin-Core-Nu-v26.3.0-macOS-AppleSilicon.dmg) |
+| macOS Intel | [Defcoin-Core-Nu-v26.3.0-macOS-Intel.dmg](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.0/Defcoin-Core-Nu-v26.3.0-macOS-Intel.dmg) |
+| Windows 11 x86_64 portable | [Defcoin-Core-Nu-v26.3.0-Windows11-x86_64-portable.zip](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.0/Defcoin-Core-Nu-v26.3.0-Windows11-x86_64-portable.zip) |
+| Windows 11 x86_64 installer | [Defcoin-Core-Nu-v26.3.0-Windows11-x86_64-Setup.exe](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.0/Defcoin-Core-Nu-v26.3.0-Windows11-x86_64-Setup.exe) |
+| Checksums | [SHA256SUMS.txt](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.0/SHA256SUMS.txt) |
+
+Note: The macOS Intel build is provided for compatibility but has not yet been
+tested on Intel Mac hardware.
+
 Key network facts
 -----------------
 
@@ -19,7 +36,8 @@ Key network facts
 - Mainnet legacy P2P magic: `fb c0 b6 db`
 - Mainnet Defcoin P2P magic: `de fc 01 4e`
 - Mainnet seed hosts: `seed.defcoin.io`, `seed.defcoin.mikej.tech`,
-  `seed.defcoin.dc903.org`, `seed.defcoincore.org`
+  `seed.defcoin.dc903.org:10332`, `seed.defcoincore.org`,
+  `seed.defcoin-ng.org`
 - Testnet P2P/RPC ports: 31337 / 19332
 - Regtest P2P/RPC ports: 19444 / 19443
 - macOS data directory: `~/Library/Application Support/Defcoin/`
@@ -80,57 +98,16 @@ Differences From Litecoin Core v0.21.5.5
 Build
 -----
 
-See [doc/defcoin-core-nu-github-notes.md](doc/defcoin-core-nu-github-notes.md),
-[doc/build-osx.md](doc/build-osx.md), [doc/build-windows.md](doc/build-windows.md),
-and [doc/defcoin-modern-build-guide.md](doc/defcoin-modern-build-guide.md).
+For Defcoin-specific architecture, network, packaging, and release notes, see
+[doc/defcoin-core-nu-technical-guide.md](doc/defcoin-core-nu-technical-guide.md).
+For platform build prerequisites, see the inherited build guides:
 
-For Defcoin-specific consensus, wallet, GUI, and porting notes, see:
-
-- [doc/defcoin-porting-notes.md](doc/defcoin-porting-notes.md)
-- [doc/defcoin-core-vs-litecoin-core.md](doc/defcoin-core-vs-litecoin-core.md)
-- [doc/defcoin-build-deviation-matrix.md](doc/defcoin-build-deviation-matrix.md)
-- [doc/defcoin-litecoin-conversion-notes.md](doc/defcoin-litecoin-conversion-notes.md)
-- [doc/defcoin-modern-build-guide.md](doc/defcoin-modern-build-guide.md)
-- [doc/litecoin-upstream-comparison-standard.md](doc/litecoin-upstream-comparison-standard.md)
-- [doc/github-publication-checklist.md](doc/github-publication-checklist.md)
-
-Native Apple Silicon backend outputs from this branch are expected to be:
-
-- `src/defcoind`
-- `src/defcoin-cli`
-- `src/defcoin-tx`
-- `src/defcoin-wallet`
-- `src/qt/defcoin-qt` for the inherited Qt Widgets wallet, where enabled
-- `src/qt/nu/app` for the Nu Qt Quick shell
-
-Run the focused smoke test after building:
-
-```sh
-./contrib/defcoin-smoke-test.sh
-```
-
-To create a local Apple Silicon DMG after `make appbundle`:
-
-```sh
-./contrib/defcoin-macos-package-dmg.sh
-```
-
-The generated DMG is an ad-hoc signed developer distribution image, not a
-Developer ID signed or notarized public release.
-
-The Apple Silicon Nu release DMG is named:
-
-```text
-Defcoin-Core-Nu-v26.3.0-macOS-AppleSilicon.dmg
-```
+- [macOS Build Notes](doc/build-osx.md)
+- [Unix Build Notes](doc/build-unix.md)
+- [Windows Build Notes](doc/build-windows.md)
 
 Release artifacts are attached to GitHub Releases rather than committed to
 source history.
-
-For the current design and porting notes, see:
-
-- [doc/defcoin-core-help-manual.md](doc/defcoin-core-help-manual.md)
-- [doc/defcoin-third-party-notices-standard.txt](doc/defcoin-third-party-notices-standard.txt)
 
 Runtime Defcoin artwork and generated Qt/macOS assets needed by the standard
 build are tracked in the repository under `src/qt/res/icons/`.
@@ -144,7 +121,9 @@ information or see https://opensource.org/licenses/MIT.
 
 Trademark rights and the non-commercial coin artwork permission are separate
 from the software license and do not grant rights to use Def Con marks outside
-the permission already documented for this project.
+the permission already documented for this project. See
+[doc/license-and-attribution-notices.md](doc/license-and-attribution-notices.md)
+for license, dependency, artwork, trademark, and attribution notices.
 
 Copyright (C) 2014-2026 The Defcoin Core developers.
 
