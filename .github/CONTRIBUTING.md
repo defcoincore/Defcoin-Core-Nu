@@ -5,7 +5,7 @@ Bitcoin Core. Contributions should preserve Defcoin chain compatibility first.
 
 ## Before Opening A Pull Request
 
-- Read the [technical guide](doc/defcoin-core-nu-technical-guide.md).
+- Read the [technical guide](../doc/defcoin-core-nu-technical-guide.md).
 - Build and test on the platform affected by your change.
 - Keep changes scoped and explain the user-facing or network-facing reason.
 - Do not change consensus behavior unless the change is explicitly reviewed as
@@ -24,7 +24,7 @@ test/functional/test_runner.py
 ```
 
 For desktop packaging and Nu-specific runtime checks, use the platform build
-notes linked from the root [README](README.md).
+notes linked from the root [README](../README.md).
 
 ## Pull Request Expectations
 

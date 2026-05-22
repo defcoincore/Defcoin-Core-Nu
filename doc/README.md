@@ -1,40 +1,15 @@
-Defcoin Core
-=============
+# Defcoin Core Nu Documentation
 
-Setup
----------------------
-Defcoin Core is the original Defcoin client and it builds the backbone of the network. It downloads and, by default, stores the entire history of Defcoin transactions, which requires approximately 22 gigabytes of disk space. Depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
+Defcoin Core Nu `26.3.1`, codename `Core Memories`, is the current packaged
+full-node desktop wallet for the Defcoin network. The root
+[README](../README.md) is the product landing page; this directory keeps build,
+developer, release, and inherited upstream reference material.
 
-The current Nu release line is Defcoin Core Nu `26.3.1`, codename
-`Core Memories`.
+For wallet and node basics, start with the app's About and Build Notes. For
+implementation details, start with the consolidated
+[Defcoin Core Nu Technical Guide](defcoin-core-nu-technical-guide.md).
 
-Running
----------------------
-The following are some helpful notes on how to run Defcoin Core on your native platform.
-
-### Unix
-
-Unpack the files into a directory and run:
-
-- `bin/defcoin-qt` (GUI) or
-- `bin/defcoind` (headless)
-
-### Windows
-
-Unpack the files into a directory, and then run defcoin-qt.exe.
-
-### macOS
-
-Drag Defcoin Core to your applications folder, and then run Defcoin Core.
-
-### Need Help?
-
-For wallet and node basics, start with the app's About and Build Notes, then
-use the developer documents below for implementation details.
-
-Building
----------------------
-The following are developer notes on how to build Defcoin Core on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
+## Build Entry Points
 
 - [Dependencies](dependencies.md)
 - [macOS Build Notes](build-osx.md)
@@ -43,17 +18,17 @@ The following are developer notes on how to build Defcoin Core on your native pl
 - [FreeBSD Build Notes](build-freebsd.md)
 - [OpenBSD Build Notes](build-openbsd.md)
 - [NetBSD Build Notes](build-netbsd.md)
+- [Install Notes](install.md)
 - [Gitian Building Guide (External Link)](https://github.com/bitcoin-core/docs/blob/master/gitian-building.md)
 
-Defcoin-specific release documentation:
+## Defcoin-Specific Release Docs
 
 - [Defcoin Core Nu Technical Guide](defcoin-core-nu-technical-guide.md)
 - [Defcoin Core Nu 26.3.1 Release Notes](release-notes/release-notes-26.3.1.md)
+- [Changelog](changelog.md)
 - [License And Attribution Notices](license-and-attribution-notices.md)
 
-Development
----------------------
-The Defcoin repo's [root README](/README.md) contains relevant information on the development process and automated testing.
+## Development Reference
 
 - [Developer Notes](developer-notes.md)
 - [Productivity Notes](productivity.md)
@@ -69,12 +44,13 @@ The Defcoin repo's [root README](/README.md) contains relevant information on th
 - [Dnsseed Policy](dnsseed-policy.md)
 - [Benchmarking](benchmarking.md)
 
-### Resources
+## Resources
 
 - Source repository: [DefcoinCore/Defcoin-Core-Nu](https://github.com/DefcoinCore/Defcoin-Core-Nu)
 - Community forum: [DefcoinTalk](https://defcointalk.io/)
 
-### Miscellaneous
+## Miscellaneous
+
 - [Assets Attribution](assets-attribution.md)
 - [bitcoin.conf Configuration File](bitcoin-conf.md)
 - [Files](files.md)
@@ -86,6 +62,6 @@ The Defcoin repo's [root README](/README.md) contains relevant information on th
 - [ZMQ](zmq.md)
 - [PSBT support](psbt.md)
 
-License
----------------------
+## License
+
 Distributed under the [MIT software license](/COPYING).

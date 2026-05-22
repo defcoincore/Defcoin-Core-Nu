@@ -11,7 +11,7 @@ if [[ $HOST = *-mingw32 ]]; then
   # Generate all binaries, so that they can be wrapped
   DOCKER_EXEC make $MAKEJOBS -C src/secp256k1-zkp VERBOSE=1
   DOCKER_EXEC make $MAKEJOBS -C src/univalue VERBOSE=1
-  DOCKER_EXEC "${BASE_ROOT_DIR}/ci/test/wrap-wine.sh"
+  DOCKER_EXEC "${BASE_ROOT_DIR}/.github/ci/test/wrap-wine.sh"
   END_FOLD
 fi
 
@@ -20,13 +20,13 @@ if [ -n "$QEMU_USER_CMD" ]; then
   # Generate all binaries, so that they can be wrapped
   DOCKER_EXEC make $MAKEJOBS -C src/secp256k1-zkp VERBOSE=1
   DOCKER_EXEC make $MAKEJOBS -C src/univalue VERBOSE=1
-  DOCKER_EXEC "${BASE_ROOT_DIR}/ci/test/wrap-qemu.sh"
+  DOCKER_EXEC "${BASE_ROOT_DIR}/.github/ci/test/wrap-qemu.sh"
   END_FOLD
 fi
 
 if [ -n "$USE_VALGRIND" ]; then
   BEGIN_FOLD wrap-valgrind
-  DOCKER_EXEC "${BASE_ROOT_DIR}/ci/test/wrap-valgrind.sh"
+  DOCKER_EXEC "${BASE_ROOT_DIR}/.github/ci/test/wrap-valgrind.sh"
   END_FOLD
 fi
 
