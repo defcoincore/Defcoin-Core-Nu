@@ -5,7 +5,7 @@
 <h1 align="center">Defcoin Core Nu</h1>
 
 <p align="center">
-  <strong>Download a Defcoin wallet. Store DFC. Send, receive, and trade Defcoin on the network.</strong>
+  <strong>Download a Defcoin wallet. Store DFC. Send and receive Defcoin tokens on the DFC network.</strong>
 </p>
 
 <p align="center">
