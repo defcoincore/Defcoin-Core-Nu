@@ -5,7 +5,7 @@
 <h1 align="center">Defcoin Core Nu</h1>
 
 <p align="center">
-  <strong>Download a Defcoin wallet. Store DFC. Send and receive Defcoin tokens on the DFC network.</strong>
+  <strong>Download a Defcoin wallet. Store DFC. Send and receive DFC on the Defcoin network.</strong>
 </p>
 
 <p align="center">
@@ -79,7 +79,7 @@ More detailed chain, seed, wallet, and compatibility notes are in the
 
 Start with a fresh clone:
 
-```sh
+```text
 git clone https://github.com/defcoincore/Defcoin-Core-Nu.git
 cd Defcoin-Core-Nu
 cd source
