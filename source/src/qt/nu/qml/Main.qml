@@ -46,7 +46,7 @@ ApplicationWindow {
     }
 
     function basicAboutText() {
-        return "Defcoin Core Nu v" + root.buildVersion + " - " + root.releaseCodeName + ". New Qt Quick interface build. Backend derived from Litecoin Core v0.21.5.5 with Defcoin consensus and network parameters. Verify recipients, amounts, and backups carefully before use. © 2014-2026 The Defcoin Core developers. © 2011-2026 The Litecoin Core developers. © 2009-2026 The Bitcoin Core developers."
+        return "Defcoin Core Nu v" + root.buildVersion + " - " + root.releaseCodeName + ". New Qt Quick interface build. Backend derived from Litecoin Core v0.21.5.5 with Defcoin consensus and network parameters. Verify recipients, amounts, and backups carefully before use. © 2014-2026 The Defcoin Core developers. © 2011-2026 The Litecoin Core developers. © 2009-2021 The Bitcoin Core developers."
     }
 
     function showHelpPage(windowTitle, page) {
