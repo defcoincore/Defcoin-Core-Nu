@@ -302,7 +302,8 @@ dedicated release host.
 
 Defcoin Core Nu was developed with AI assistance for documentation cleanup,
 UI iteration, build scripting, code review, and repetitive source migration
-work. Human review, local builds, runtime testing, and open-source
+work, specifically OpenAI Codex using GPT-5.5 with extra-high reasoning
+settings. Human review, local builds, runtime testing, and open-source
 publication remain the controls that make the result auditable. AI assistance
 does not change the inherited MIT license or the requirement that maintainers
 review security-sensitive wallet and networking changes carefully.
