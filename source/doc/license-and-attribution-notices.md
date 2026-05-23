@@ -8,7 +8,7 @@ license text.
 ## Core Copyright
 
 - Copyright (c) 2014-2026 The Defcoin Core developers
-- Copyright (c) 2011-2021 The Litecoin Core developers
+- Copyright (c) 2011-2026 The Litecoin Core developers
 - Copyright (c) 2009-2021 The Bitcoin Core developers
 - Copyright (c) 2009-2021 Bitcoin Developers
 
