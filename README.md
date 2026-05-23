@@ -60,6 +60,26 @@ sync before relying on balances or recent transactions.
 - Receive request history, PSBT handling, message signing, wallet backup,
   encryption, and passphrase flows.
 
+## Screenshots
+
+<p align="center">
+  <img src="source/doc/assets/screenshots/nu-diagnostics-traffic.png" width="860" alt="Defcoin Core Nu Diagnostics network traffic chart">
+</p>
+
+<p align="center"><em>Diagnostics traffic view after an extended live network session.</em></p>
+
+<p align="center">
+  <img src="source/doc/assets/screenshots/nu-diagnostics-peers.png" width="860" alt="Defcoin Core Nu Diagnostics peers table">
+</p>
+
+<p align="center"><em>Peer diagnostics with observed magic bytes, protocol version, DNS names, and aliases.</em></p>
+
+<p align="center">
+  <img src="source/doc/assets/screenshots/nu-settings-network.png" width="860" alt="Defcoin Core Nu network settings">
+</p>
+
+<p align="center"><em>Network settings for peer filtering, dual-magic migration, and LAN discovery.</em></p>
+
 ## Network Identity
 
 | Item | Value |
