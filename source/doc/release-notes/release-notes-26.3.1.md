@@ -15,6 +15,15 @@ Notable release changes:
   removed from source and packages.
 - Build notes and release-facing documentation were tightened to describe the
   current release only.
+- An optional mainnet bootstrap pack is available from the GitHub release
+  assets for users who want to speed up first sync.
+
+## Optional Bootstrap Pack
+
+The `Defcoin-bootstrap-mainnet-2332283.zip` release asset contains
+`bootstrap.dat`, macOS and Windows import scripts, instructions, and checksums.
+It snapshots mainnet through block `2,332,283`. Defcoin Core Nu still verifies
+imported blocks and then syncs newer blocks from the network normally.
 
 Technical details are maintained in
 `doc/defcoin-core-nu-technical-guide.md`.

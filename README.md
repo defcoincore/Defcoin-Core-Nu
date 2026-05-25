@@ -38,6 +38,7 @@ Choose the package for your computer from
 | macOS Intel | [DMG](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-Core-Nu-v26.3.1-macOS-Intel.dmg) |
 | Windows 11 x86_64 | [Installer](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-Core-Nu-v26.3.1-Windows11-x86_64-Setup.exe) |
 | Windows 11 x86_64 | [Portable ZIP](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-Core-Nu-v26.3.1-Windows11-x86_64-portable.zip) |
+| Optional bootstrap pack | [Bootstrap ZIP](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-bootstrap-mainnet-2332283.zip) · [SHA-256](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-bootstrap-mainnet-2332283.zip.sha256) |
 | Verification | [SHA256SUMS.txt](https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/SHA256SUMS.txt) |
 
 The macOS Intel build is provided for compatibility but has not yet been tested
@@ -45,6 +46,12 @@ on Intel Mac hardware.
 
 After installing, start the wallet, let it connect to peers, and allow it to
 sync before relying on balances or recent transactions.
+
+Optional bootstrap pack: users who want to speed up first sync can download the
+bootstrap ZIP from the release assets. It contains `bootstrap.dat`, macOS and
+Windows import scripts, install instructions, and checksums. The snapshot is at
+block `2,332,283`; the node still verifies imported blocks and syncs newer
+blocks normally.
 
 ## What Nu Adds
 
