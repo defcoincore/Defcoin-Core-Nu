@@ -6,7 +6,7 @@ Target:
 
 - Mac OS X 10.7.5
 - Xcode 4.6.3
-- Qt 5.5.1 `qtbase`
+- Qt 5.5.1 `qtbase`, patched for MacPorts OpenSSL3
 - qmake, not the CMake 3.24+ Qt 6 build
 
 Reason:
@@ -18,11 +18,15 @@ Reason:
 Build sketch on the legacy Mac:
 
 ```sh
-QMAKE="$HOME/defcoin-core-nu-build-YYYYMMDD_HHMMSS/tools/qt-5.5.1/bin/qmake"
+QMAKE="$HOME/defcoin-core-nu-build-YYYYMMDD_HHMMSS/tools/qt-5.5.1-openssl3test/bin/qmake"
 cd "$HOME/defcoin-core-nu-build-YYYYMMDD_HHMMSS/src/src/qt/nu/legacy-osx107"
 "$QMAKE" DefcoinCoreNuLegacy.pro -spec macx-clang CONFIG+=release
 make -j2
 ```
+
+The Qt 5.5.1 source must be patched with
+`depends/patches/qt5.5.1/openssl3-lion-compat.patch` before building against
+MacPorts `openssl3`.
 
 The initial legacy shell is a Qt Widgets launcher/status surface. It is not a
 port of the full Qt Quick Controls 2 application.

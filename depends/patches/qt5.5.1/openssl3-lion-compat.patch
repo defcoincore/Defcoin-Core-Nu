@@ -1,0 +1,227 @@
+--- a/src/network/ssl/qsslcertificate_openssl.cpp	2026-05-28 06:36:31.000000000 -0500
++++ b/src/network/ssl/qsslcertificate_openssl.cpp	2026-05-28 06:36:54.000000000 -0500
+@@ -58,9 +58,11 @@
+ uint qHash(const QSslCertificate &key, uint seed) Q_DECL_NOTHROW
+ {
+     if (X509 * const x509 = key.d->x509) {
+-        (void)q_X509_cmp(x509, x509); // populate x509->sha1_hash
+-                                      // (if someone knows a better way...)
+-        return qHashBits(x509->sha1_hash, SHA_DIGEST_LENGTH, seed);
++        const EVP_MD *sha1 = EVP_sha1();
++        unsigned int len = 0;
++        unsigned char md[EVP_MAX_MD_SIZE];
++        X509_digest(x509, sha1, md, &len);
++        return qHashBits(md, len, seed);
+     } else {
+         return seed;
+     }
+@@ -84,7 +86,7 @@
+     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+     if (d->versionString.isEmpty() && d->x509)
+         d->versionString =
+-            QByteArray::number(qlonglong(q_ASN1_INTEGER_get(d->x509->cert_info->version)) + 1);
++            QByteArray::number(qlonglong(X509_get_version(d->x509)) + 1);
+ 
+     return d->versionString;
+ }
+@@ -93,7 +95,7 @@
+ {
+     QMutexLocker lock(QMutexPool::globalInstanceGet(d.data()));
+     if (d->serialNumberString.isEmpty() && d->x509) {
+-        ASN1_INTEGER *serialNumber = d->x509->cert_info->serialNumber;
++        ASN1_INTEGER *serialNumber = X509_get_serialNumber(d->x509);
+         QByteArray hexString;
+         hexString.reserve(serialNumber->length * 3);
+         for (int a = 0; a < serialNumber->length; ++a) {
+@@ -229,25 +231,24 @@
+     QSslKey key;
+ 
+     key.d->type = QSsl::PublicKey;
+-    X509_PUBKEY *xkey = d->x509->cert_info->key;
+-    EVP_PKEY *pkey = q_X509_PUBKEY_get(xkey);
++    EVP_PKEY *pkey = X509_get_pubkey(d->x509);
+     Q_ASSERT(pkey);
+ 
+-    if (q_EVP_PKEY_type(pkey->type) == EVP_PKEY_RSA) {
++    if (q_EVP_PKEY_type(EVP_PKEY_base_id(pkey)) == EVP_PKEY_RSA) {
+         key.d->rsa = q_EVP_PKEY_get1_RSA(pkey);
+         key.d->algorithm = QSsl::Rsa;
+         key.d->isNull = false;
+-    } else if (q_EVP_PKEY_type(pkey->type) == EVP_PKEY_DSA) {
++    } else if (q_EVP_PKEY_type(EVP_PKEY_base_id(pkey)) == EVP_PKEY_DSA) {
+         key.d->dsa = q_EVP_PKEY_get1_DSA(pkey);
+         key.d->algorithm = QSsl::Dsa;
+         key.d->isNull = false;
+ #ifndef OPENSSL_NO_EC
+-    } else if (q_EVP_PKEY_type(pkey->type) == EVP_PKEY_EC) {
++    } else if (q_EVP_PKEY_type(EVP_PKEY_base_id(pkey)) == EVP_PKEY_EC) {
+         key.d->ec = q_EVP_PKEY_get1_EC_KEY(pkey);
+         key.d->algorithm = QSsl::Ec;
+         key.d->isNull = false;
+ #endif
+-    } else if (q_EVP_PKEY_type(pkey->type) == EVP_PKEY_DH) {
++    } else if (q_EVP_PKEY_type(EVP_PKEY_base_id(pkey)) == EVP_PKEY_DH) {
+         // DH unsupported
+     } else {
+         // error?
+--- a/src/network/ssl/qsslkey_openssl.cpp	2026-05-28 06:36:31.000000000 -0500
++++ b/src/network/ssl/qsslkey_openssl.cpp	2026-05-28 06:36:31.000000000 -0500
+@@ -78,33 +78,27 @@
+ 
+ bool QSslKeyPrivate::fromEVP_PKEY(EVP_PKEY *pkey)
+ {
+-    if (pkey->type == EVP_PKEY_RSA) {
++    const int keyType = q_EVP_PKEY_type(EVP_PKEY_base_id(pkey));
++    if (keyType == EVP_PKEY_RSA) {
+         isNull = false;
+         algorithm = QSsl::Rsa;
+         type = QSsl::PrivateKey;
+-
+-        rsa = q_RSA_new();
+-        memcpy(rsa, q_EVP_PKEY_get1_RSA(pkey), sizeof(RSA));
+-
++        rsa = q_EVP_PKEY_get1_RSA(pkey);
+         return true;
+     }
+-    else if (pkey->type == EVP_PKEY_DSA) {
++    else if (keyType == EVP_PKEY_DSA) {
+         isNull = false;
+         algorithm = QSsl::Dsa;
+         type = QSsl::PrivateKey;
+-
+-        dsa = q_DSA_new();
+-        memcpy(dsa, q_EVP_PKEY_get1_DSA(pkey), sizeof(DSA));
+-
++        dsa = q_EVP_PKEY_get1_DSA(pkey);
+         return true;
+     }
+ #ifndef OPENSSL_NO_EC
+-    else if (pkey->type == EVP_PKEY_EC) {
++    else if (keyType == EVP_PKEY_EC) {
+         isNull = false;
+         algorithm = QSsl::Ec;
+         type = QSsl::PrivateKey;
+-        ec = q_EC_KEY_dup(q_EVP_PKEY_get1_EC_KEY(pkey));
+-
++        ec = q_EVP_PKEY_get1_EC_KEY(pkey);
+         return true;
+     }
+ #endif
+@@ -172,8 +166,8 @@
+         return -1;
+ 
+     switch (algorithm) {
+-        case QSsl::Rsa: return q_BN_num_bits(rsa->n);
+-        case QSsl::Dsa: return q_BN_num_bits(dsa->p);
++        case QSsl::Rsa: return RSA_bits(rsa);
++        case QSsl::Dsa: return DSA_bits(dsa);
+ #ifndef OPENSSL_NO_EC
+         case QSsl::Ec: return q_EC_GROUP_get_degree(q_EC_KEY_get0_group(ec));
+ #endif
+--- a/src/network/ssl/qsslcontext_openssl.cpp	2026-05-28 06:39:38.000000000 -0500
++++ b/src/network/ssl/qsslcontext_openssl.cpp	2026-05-28 06:39:38.000000000 -0500
+@@ -322,7 +322,7 @@
+     q_DH_free(dh);
+ 
+ #ifndef OPENSSL_NO_EC
+-#if OPENSSL_VERSION_NUMBER >= 0x10002000L
++#if OPENSSL_VERSION_NUMBER >= 0x10002000L && OPENSSL_VERSION_NUMBER < 0x10100000L
+     if (q_SSLeay() >= 0x10002000L) {
+         q_SSL_CTX_ctrl(sslContext->ctx, SSL_CTRL_SET_ECDH_AUTO, 1, NULL);
+     } else
+@@ -468,7 +468,7 @@
+             unsigned char *data = reinterpret_cast<unsigned char *>(m_sessionASN1.data());
+             if (!q_i2d_SSL_SESSION(session, &data))
+                 qCWarning(lcSsl, "could not store persistent version of SSL session");
+-            m_sessionTicketLifeTimeHint = session->tlsext_tick_lifetime_hint;
++            m_sessionTicketLifeTimeHint = SSL_SESSION_get_ticket_lifetime_hint(session);
+         }
+     }
+ 
+--- a/src/network/ssl/qsslsocket_openssl.cpp	2026-05-28 06:42:31.000000000 -0500
++++ b/src/network/ssl/qsslsocket_openssl.cpp	2026-05-28 06:42:31.000000000 -0500
+@@ -1582,7 +1582,7 @@
+     if (readBufferMaxSize)
+         plainSocket->setReadBufferSize(readBufferMaxSize);
+ 
+-    if (q_SSL_ctrl((ssl), SSL_CTRL_GET_SESSION_REUSED, 0, NULL))
++    if (SSL_session_reused(ssl))
+         configuration.peerSessionShared = true;
+ 
+ #ifdef QT_DECRYPT_SSL_TRAFFIC
+--- a/src/network/ssl/qsslsocket_openssl_symbols.cpp	2026-05-28 06:47:30.000000000 -0500
++++ b/src/network/ssl/qsslsocket_openssl_symbols.cpp	2026-05-28 06:47:30.000000000 -0500
+@@ -136,10 +136,10 @@
+ DEFINEFUNC2(int, ASN1_STRING_to_UTF8, unsigned char **a, a, ASN1_STRING *b, b, return 0, return);
+ DEFINEFUNC4(long, BIO_ctrl, BIO *a, a, int b, b, long c, c, void *d, d, return -1, return)
+ DEFINEFUNC(int, BIO_free, BIO *a, a, return 0, return)
+-DEFINEFUNC(BIO *, BIO_new, BIO_METHOD *a, a, return 0, return)
++DEFINEFUNC(BIO *, BIO_new, const BIO_METHOD *a, a, return 0, return)
+ DEFINEFUNC2(BIO *, BIO_new_mem_buf, void *a, a, int b, b, return 0, return)
+ DEFINEFUNC3(int, BIO_read, BIO *a, a, void *b, b, int c, c, return -1, return)
+-DEFINEFUNC(BIO_METHOD *, BIO_s_mem, void, DUMMYARG, return 0, return)
++DEFINEFUNC(const BIO_METHOD *, BIO_s_mem, void, DUMMYARG, return 0, return)
+ DEFINEFUNC3(int, BIO_write, BIO *a, a, const void *b, b, int c, c, return -1, return)
+ DEFINEFUNC(int, BN_num_bits, const BIGNUM *a, a, return 0, return)
+ #ifndef OPENSSL_NO_EC
+@@ -149,7 +149,11 @@
+ DEFINEFUNC(int, CRYPTO_num_locks, DUMMYARG, DUMMYARG, return 0, return)
+ DEFINEFUNC(void, CRYPTO_set_locking_callback, void (*a)(int, int, const char *, int), a, return, DUMMYARG)
+ DEFINEFUNC(void, CRYPTO_set_id_callback, unsigned long (*a)(), a, return, DUMMYARG)
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++void q_CRYPTO_free(void *a) { OPENSSL_free(a); }
++#else
+ DEFINEFUNC(void, CRYPTO_free, void *a, a, return, DUMMYARG)
++#endif
+ DEFINEFUNC(DSA *, DSA_new, DUMMYARG, DUMMYARG, return 0, return)
+ DEFINEFUNC(void, DSA_free, DSA *a, a, return, DUMMYARG)
+ DEFINEFUNC3(X509 *, d2i_X509, X509 **a, a, const unsigned char **b, b, long c, c, return 0, return)
+@@ -284,7 +288,9 @@
+ DEFINEFUNC2(void, SSL_set_psk_client_callback, SSL* ssl, ssl, q_psk_client_callback_t callback, callback, return, DUMMYARG)
+ #endif
+ #if OPENSSL_VERSION_NUMBER >= 0x10000000L
+-#ifndef OPENSSL_NO_SSL2
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++const SSL_METHOD *q_SSLv2_client_method() { return 0; }
++#elif !defined(OPENSSL_NO_SSL2)
+ DEFINEFUNC(const SSL_METHOD *, SSLv2_client_method, DUMMYARG, DUMMYARG, return 0, return)
+ #endif
+ #ifndef OPENSSL_NO_SSL3_METHOD
+@@ -296,7 +302,9 @@
+ DEFINEFUNC(const SSL_METHOD *, TLSv1_1_client_method, DUMMYARG, DUMMYARG, return 0, return)
+ DEFINEFUNC(const SSL_METHOD *, TLSv1_2_client_method, DUMMYARG, DUMMYARG, return 0, return)
+ #endif
+-#ifndef OPENSSL_NO_SSL2
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++const SSL_METHOD *q_SSLv2_server_method() { return 0; }
++#elif !defined(OPENSSL_NO_SSL2)
+ DEFINEFUNC(const SSL_METHOD *, SSLv2_server_method, DUMMYARG, DUMMYARG, return 0, return)
+ #endif
+ #ifndef OPENSSL_NO_SSL3_METHOD
+--- a/src/network/ssl/qsslsocket_openssl_symbols_p.h	2026-05-28 06:39:38.000000000 -0500
++++ b/src/network/ssl/qsslsocket_openssl_symbols_p.h	2026-05-28 06:47:30.000000000 -0500
+@@ -215,10 +215,10 @@
+ int q_ASN1_STRING_to_UTF8(unsigned char **a, ASN1_STRING *b);
+ long q_BIO_ctrl(BIO *a, int b, long c, void *d);
+ int q_BIO_free(BIO *a);
+-BIO *q_BIO_new(BIO_METHOD *a);
++BIO *q_BIO_new(const BIO_METHOD *a);
+ BIO *q_BIO_new_mem_buf(void *a, int b);
+ int q_BIO_read(BIO *a, void *b, int c);
+-BIO_METHOD *q_BIO_s_mem();
++const BIO_METHOD *q_BIO_s_mem();
+ int q_BIO_write(BIO *a, const void *b, int c);
+ int q_BN_num_bits(const BIGNUM *a);
+ #ifndef OPENSSL_NO_EC
+@@ -485,7 +485,11 @@
+         PEM_ASN1_write_bio((int (*)(void*, unsigned char**))q_i2d_DSAPrivateKey,PEM_STRING_DSA,\
+                            bp,(char *)x,enc,kstr,klen,cb,u)
+ #endif
++#if OPENSSL_VERSION_NUMBER >= 0x10100000L
++#define q_SSL_CTX_set_options(ctx,op) SSL_CTX_set_options((ctx),(op))
++#else
+ #define q_SSL_CTX_set_options(ctx,op) q_SSL_CTX_ctrl((ctx),SSL_CTRL_OPTIONS,(op),NULL)
++#endif
+ #define q_SSL_CTX_set_mode(ctx,op) q_SSL_CTX_ctrl((ctx),SSL_CTRL_MODE,(op),NULL)
+ #define q_SKM_sk_num(type, st) ((int (*)(const STACK_OF(type) *))q_sk_num)(st)
+ #define q_SKM_sk_value(type, st,i) ((type * (*)(const STACK_OF(type) *, int))q_sk_value)(st, i)
