@@ -18,6 +18,7 @@ Options:
   --version VERSION     Version label for the DMG filename. Defaults to 26.3.1-lion.
   --background PATH     PNG image to use as a DMG background. If omitted, one is generated.
   --no-dmg              Stage the app only; do not create a DMG.
+  --no-strip            Do not strip local Mach-O symbols from bundled binaries.
 
 The script is intended for the legacy OS X 10.7 Qt 5.5.1 build. It can run on
 the Lion Mac or on a newer Mac after rsyncing the built app and Qt prefix.
@@ -34,6 +35,7 @@ OUTPUT_DIR=
 VERSION=26.3.1-lion
 BACKGROUND=
 MAKE_DMG=1
+STRIP_BINARIES=1
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -47,6 +49,7 @@ while [[ $# -gt 0 ]]; do
     --version) VERSION=$2; shift 2 ;;
     --background) BACKGROUND=$2; shift 2 ;;
     --no-dmg) MAKE_DMG=0; shift ;;
+    --no-strip) STRIP_BINARIES=0; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
   esac
@@ -83,10 +86,6 @@ rm -rf "$STAGE" "$DMG_ROOT"
 mkdir -p "$OUTPUT_DIR" "$STAGE"
 cp -R "$APP_IN" "$APP"
 mkdir -p "$FRAMEWORKS" "$NU_RESOURCES/bin" "$NU_RESOURCES/ssl"
-if [[ -d "$ROOT_DIR/src/qt/nu/assets" ]]; then
-  rm -rf "$NU_RESOURCES/assets"
-  cp -R "$ROOT_DIR/src/qt/nu/assets" "$NU_RESOURCES/assets"
-fi
 
 PLIST="$APP/Contents/Info.plist"
 if [[ -x /usr/libexec/PlistBuddy && -f "$PLIST" ]]; then
@@ -126,7 +125,7 @@ copy_dylib() {
   chmod u+w "$dst"
 }
 
-for lib in libQt5Core.5.dylib libQt5Gui.5.dylib libQt5Widgets.5.dylib libQt5Network.5.dylib libQt5PrintSupport.5.dylib; do
+for lib in libQt5Core.5.dylib libQt5Gui.5.dylib libQt5Widgets.5.dylib; do
   copy_dylib "$QT_PREFIX/lib/$lib"
 done
 
@@ -162,6 +161,19 @@ is_bundle_dependency() {
   esac
 }
 
+copy_legacy_nu_assets() {
+  local src="$ROOT_DIR/src/qt/nu/assets"
+  local dst="$NU_RESOURCES/assets"
+  [[ -d "$src" ]] || return 0
+
+  rm -rf "$dst"
+  mkdir -p "$dst/brand" "$dst/icons"
+  cp "$src/brand/defcoin-nu-icon-1024.png" "$dst/brand/"
+  for icon in activity home node receive send wallet; do
+    cp "$src/icons/$icon.svg" "$dst/icons/"
+  done
+}
+
 copy_dependency_closure() {
   local bin=$1
   local dep src dst
@@ -177,6 +189,17 @@ copy_dependency_closure() {
     chmod u+w "$dst"
     copy_dependency_closure "$dst"
   done < <(otool -L "$bin" | awk 'NR > 1 {print $1}')
+}
+
+strip_macho_binary() {
+  local bin=$1
+  [[ "$STRIP_BINARIES" -eq 1 && -f "$bin" ]] || return 0
+  case "$(file -b "$bin" 2>/dev/null || true)" in
+    Mach-O*)
+      chmod u+w "$bin" 2>/dev/null || true
+      /usr/bin/strip -x "$bin" 2>/dev/null || true
+      ;;
+  esac
 }
 
 rewrite_binary() {
@@ -209,6 +232,9 @@ if [[ ! -x "$APP_EXE" ]]; then
   echo "App executable not found or not executable: $APP_EXE" >&2
   exit 1
 fi
+if [[ "$APP_EXE_NAME" == "DefcoinCoreNuLegacy" ]]; then
+  copy_legacy_nu_assets
+fi
 copy_dependency_closure "$APP_EXE"
 if [[ -n "$DEFCOIND" && -x "$NU_RESOURCES/bin/defcoind" ]]; then
   copy_dependency_closure "$NU_RESOURCES/bin/defcoind"
@@ -226,6 +252,10 @@ done
 if [[ -n "$DEFCOIND" && -x "$NU_RESOURCES/bin/defcoind" ]]; then
   rewrite_binary "$NU_RESOURCES/bin/defcoind" "@executable_path/../../../Frameworks"
 fi
+
+find "$APP/Contents" -type f \( -perm +111 -o -name "*.dylib" -o -name "*.so" \) -print0 | while IFS= read -r -d '' file; do
+  strip_macho_binary "$file"
+done
 
 generate_background() {
   local out=$1

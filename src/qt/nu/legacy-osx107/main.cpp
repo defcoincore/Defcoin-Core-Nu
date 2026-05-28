@@ -1,5 +1,4 @@
 #include <QtWidgets>
-#include <QtNetwork>
 
 #ifndef DEFCOIN_NU_VERSION
 #define DEFCOIN_NU_VERSION "26.3.1-lion-nu"

@@ -215,10 +215,16 @@ Nu UI Lion build:
   `Contents/Resources/nu/assets`, starts the bundled `defcoind` with
   `listen=1`, `discover=1`, and `allowlannodediscovery=1`, and exposes live
   node/log status in Home, Wallet, Node, and Activity views.
+- The optimized Lion Nu shell links only Qt Widgets/Core/Gui directly. It does
+  not link QtNetwork because all peer and HTTPS behavior is handled by bundled
+  `defcoind` and the bundled OpenSSL3 runtime.
 - Built on Lion with the patched Qt 5.5.1 prefix through qmake:
   `src/qt/nu/legacy-osx107/DefcoinCoreNuLegacy.pro`.
 - Staged on Lion with `contrib/legacy-osx107/package_legacy_dmg.sh --no-dmg`
   so dependency rewriting still happens on the 10.7 machine.
+- Optimized staging strips local Mach-O symbols with `strip -x`, copies only
+  the Nu shell assets used at runtime, and lets the dependency closure copy Qt
+  libraries on demand instead of unconditionally bundling QtNetwork.
 - The final Nu UI DMG was created on the Tahoe Mac with Python `dmgbuild`
   instead of Finder AppleScript. This avoids intermittent Finder AppleEvent
   timeouts on Lion and applies the same 640x420 Apple Silicon DMG background
@@ -271,18 +277,22 @@ Final full Qt wallet artifact:
 
 Final Nu UI Lion artifact:
 
-- `/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-dmg/Defcoin-Core-Nu-26.3.1-lion-nuui-osx107.dmg`
+- `/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-dmg/Defcoin-Core-Nu-26.3.1-lion-nuui-optimized-osx107.dmg`
 - SHA256:
-  `e3f6c796ed3a6983aa98c0755789287b9b97da71094a3856886711cb1d39595a`
+  `1b390c0bd2c0978227894256ec1c6729d2a3e48877ce5e149d8641015b99e1ca`
 - Built from the Lion-staged app archive:
-  `/Users/david/defcoin-core-nu-build-20260528_034346/nu-ui-legacy-stage/Defcoin-Core-Nu-Lion-NuUI-stage.tar.gz`
+  `/Users/david/defcoin-core-nu-build-20260528_034346/nu-ui-optimized-stage/Defcoin-Core-Nu-Lion-NuUI-optimized-stage.tar.gz`
 - The app launch was tested from the mounted DMG on Mac OS X 10.7.5. Final
   screenshot:
-  `/Users/david/defcoin-core-nu-build-20260528_034346/screenshot-nu-ui-lion-final.png`
+  `/Users/david/defcoin-core-nu-build-20260528_034346/screenshot-nu-ui-lion-optimized.png`
 - The visible UI is the Nu shell with a dark navigation rail, Nu icon, Home,
   Wallet, Send, Receive, Node, Activity routes, and node status cards.
 - The final DMG was generated with Tahoe-side `dmgbuild` using the Apple Silicon
   background PNG and icon positions to avoid Lion Finder DMG metadata timeouts.
+- Optimization reduced the staged app from 82 MB to 65 MB and the compressed DMG
+  from about 28 MB to about 24 MB. The staged `defcoind` dropped from 47 MB to
+  36 MB after symbol stripping, runtime Nu assets dropped from 3.0 MB to 788 KB,
+  and QtNetwork is no longer bundled for the Nu shell.
 
 Final Lion validation:
 
@@ -312,13 +322,13 @@ Final Lion validation:
   seconds. SSH/rsync remains the simplest reliable transfer path, and SMB1 was
   not needed.
 - Final Nu UI DMG validation copied
-  `Defcoin-Core-Nu-26.3.1-lion-nuui-osx107.dmg` back to the Lion Mac, verified
-  it with Lion's `hdiutil`, mounted it at `/Volumes/Defcoin Core Nu`, and
-  launched `DefcoinCoreNuLegacy` from the mounted image.
+  `Defcoin-Core-Nu-26.3.1-lion-nuui-optimized-osx107.dmg` back to the Lion Mac,
+  verified it with Lion's `hdiutil`, mounted it at `/Volumes/Defcoin Core Nu`,
+  and launched `DefcoinCoreNuLegacy` from the mounted image.
 - The Nu UI launch produced
-  `/Users/david/defcoin-core-nu-build-20260528_034346/screenshot-nu-ui-lion-final.png`
+  `/Users/david/defcoin-core-nu-build-20260528_034346/screenshot-nu-ui-lion-optimized.png`
   and showed the Nu navigation shell on Mac OS X 10.7.5.
-- The bundled Nu backend was also started from the Lion-staged app with
+- The bundled Nu backend was also started from the mounted optimized DMG with
   `listen=1`, `discover=1`, and `allowlannodediscovery=1`; it created a fresh
   test datadir, loaded the wallet subsystem, discovered local addresses, and
   bound Defcoin port `1337`. The short backend test used `-connect=0` to avoid

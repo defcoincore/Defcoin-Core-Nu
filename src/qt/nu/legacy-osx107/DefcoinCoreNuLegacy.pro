@@ -1,10 +1,10 @@
-QT += widgets network
+QT += widgets
 
 CONFIG += c++11 release
 TEMPLATE = app
 TARGET = DefcoinCoreNuLegacy
 
-DEFINES += DEFCOIN_NU_VERSION=\\\"26.3.1-lion\\\"
+DEFINES += DEFCOIN_NU_VERSION=\\\"26.3.1-lion-nuui\\\"
 
 SOURCES += main.cpp
 
