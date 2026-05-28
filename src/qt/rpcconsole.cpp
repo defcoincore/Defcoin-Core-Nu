@@ -953,8 +953,8 @@ public:
             return;
         }
 
-        qint64 low = samples.constFirst();
-        qint64 high = samples.constFirst();
+        qint64 low = samples.first();
+        qint64 high = samples.first();
         for (const qint64 sample : samples) {
             low = std::min(low, sample);
             high = std::max(high, sample);
@@ -1023,15 +1023,15 @@ public:
             }
         }
 
-        QPen path_pen(sample_color(samples.constLast()), 1.8);
+        QPen path_pen(sample_color(samples.last()), 1.8);
         path_pen.setCapStyle(Qt::RoundCap);
         path_pen.setJoinStyle(Qt::RoundJoin);
         painter->setPen(path_pen);
         painter->drawPath(heartbeat);
-        painter->setBrush(sample_color(samples.constLast()));
+        painter->setBrush(sample_color(samples.last()));
         painter->setPen(Qt::NoPen);
         const qreal last_x = r.left() + (samples.size() - 1) * step;
-        const qreal last_normalized = span > 0 ? static_cast<qreal>(samples.constLast() - low) / static_cast<qreal>(span) : 0.5;
+        const qreal last_normalized = span > 0 ? static_cast<qreal>(samples.last() - low) / static_cast<qreal>(span) : 0.5;
         const qreal last_y = r.bottom() - last_normalized * r.height();
         painter->drawEllipse(QPointF(last_x, last_y), live_phase == 3 ? 2.0 : 3.4, live_phase == 3 ? 2.0 : 3.4);
         painter->restore();
@@ -5539,7 +5539,7 @@ void RPCConsole::setClientModel(ClientModel *model, int bestblock_height, int64_
 
         connect(ui->banlistWidget->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this](const QItemSelection& selected, const QItemSelection&) {
             if (selected.indexes().isEmpty()) return;
-            updateBannedPeerDetail(selected.indexes().constFirst());
+            updateBannedPeerDetail(selected.indexes().first());
         });
         connect(ui->banlistWidget, &QTableView::doubleClicked, this, [this](const QModelIndex& index) {
             if (!index.isValid()) return;
@@ -7649,10 +7649,10 @@ void RPCConsole::runLocalPeerDiscoveryScan()
     }
 
     QProcess* arp = new QProcess(this);
-    connect(arp, &QProcess::errorOccurred, this, [arp](QProcess::ProcessError) {
+    connect(arp, static_cast<void (QProcess::*)(QProcess::ProcessError)>(&QProcess::error), this, [arp](QProcess::ProcessError) {
         arp->deleteLater();
     });
-    connect(arp, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this, arp, now](int, QProcess::ExitStatus) {
+    connect(arp, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, [this, arp, now](int, QProcess::ExitStatus) {
         const QString output = QString::fromLocal8Bit(arp->readAllStandardOutput());
         QRegExp ip_expr(QStringLiteral("\\((\\d+\\.\\d+\\.\\d+\\.\\d+)\\)"));
         const QSet<QString> local_ips = localIPv4Strings();
@@ -7766,7 +7766,7 @@ void RPCConsole::probeLocalPeer(const QString& endpoint)
     };
 
     connect(socket, &QTcpSocket::connected, this, [finish] { finish(true); });
-    connect(socket, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::error), this, [finish](QAbstractSocket::SocketError) { finish(false); });
+    connect(socket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, [finish](QAbstractSocket::SocketError) { finish(false); });
     connect(timeout, &QTimer::timeout, this, [finish] { finish(false); });
 
     socket->connectToHost(host, port);
@@ -7872,11 +7872,11 @@ void RPCConsole::showTraceRouteDialog()
         output_ptr->insertPlainText(QString::fromLocal8Bit(process_ptr->readAllStandardError()));
         output_ptr->moveCursor(QTextCursor::End);
     });
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), process, [output_ptr](int exit_code, QProcess::ExitStatus) {
+    connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), process, [output_ptr](int exit_code, QProcess::ExitStatus) {
         if (!output_ptr) return;
         output_ptr->appendPlainText(QObject::tr("\nTraceroute finished with exit code %1. This window will remain open until you close it.").arg(exit_code));
     });
-    connect(process, &QProcess::errorOccurred, process, [output_ptr](QProcess::ProcessError) {
+    connect(process, static_cast<void (QProcess::*)(QProcess::ProcessError)>(&QProcess::error), process, [output_ptr](QProcess::ProcessError) {
         if (!output_ptr) return;
         output_ptr->appendPlainText(QObject::tr("Unable to start the system traceroute tool."));
     });
@@ -7972,11 +7972,11 @@ void RPCConsole::showPingDialog()
         output_ptr->insertPlainText(QString::fromLocal8Bit(process_ptr->readAllStandardError()));
         output_ptr->moveCursor(QTextCursor::End);
     });
-    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), process, [output_ptr](int exit_code, QProcess::ExitStatus) {
+    connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), process, [output_ptr](int exit_code, QProcess::ExitStatus) {
         if (!output_ptr) return;
         output_ptr->appendPlainText(QObject::tr("\nPing finished with exit code %1. This window will remain open until you close it.").arg(exit_code));
     });
-    connect(process, &QProcess::errorOccurred, process, [output_ptr](QProcess::ProcessError) {
+    connect(process, static_cast<void (QProcess::*)(QProcess::ProcessError)>(&QProcess::error), process, [output_ptr](QProcess::ProcessError) {
         if (!output_ptr) return;
         output_ptr->appendPlainText(QObject::tr("Unable to start the system ping tool."));
     });

@@ -96,7 +96,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     mapper(nullptr)
 {
     ui->setupUi(this);
-    setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     setMinimumSize(700, 660);
     resize(740, 700);
     if (QTabBar* tab_bar = ui->tabWidget->tabBar()) {
@@ -252,7 +252,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     peer_map_zoom_in_layout->addWidget(peer_map_zoom_in_label);
     peer_map_zoom_in_layout->addWidget(peer_map_zoom_in);
     ui->verticalLayout_Display->insertLayout(ui->verticalLayout_Display->count() - 1, peer_map_zoom_in_layout);
-    connect(peer_map_zoom_in, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [](double value) {
+    connect(peer_map_zoom_in, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, [](double value) {
         QSettings().setValue(QStringLiteral("PeerMapZoomedInMax"), value);
     });
 
@@ -268,7 +268,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     peer_map_zoom_out_layout->addWidget(peer_map_zoom_out_label);
     peer_map_zoom_out_layout->addWidget(peer_map_zoom_out);
     ui->verticalLayout_Display->insertLayout(ui->verticalLayout_Display->count() - 1, peer_map_zoom_out_layout);
-    connect(peer_map_zoom_out, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [](double value) {
+    connect(peer_map_zoom_out, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, [](double value) {
         QSettings().setValue(QStringLiteral("PeerMapZoomedOutMax"), value);
     });
 #endif
@@ -350,7 +350,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     thirdPartyTxUrlError->setWordWrap(true);
     thirdPartyTxUrlError->hide();
     ui->verticalLayout_Display->insertWidget(5, thirdPartyTxUrlError);
-    connect(thirdPartyTxUrlPresets, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index) {
+    connect(thirdPartyTxUrlPresets, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, [this](int index) {
         const QString url = thirdPartyTxUrlPresets->itemData(index).toString();
         if (url.isEmpty()) {
             if (thirdPartyTxUrlsEnabled) thirdPartyTxUrlsEnabled->setChecked(false);

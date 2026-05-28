@@ -11,6 +11,8 @@
 class CAppNapInhibitor::CAppNapImpl
 {
 public:
+    CAppNapImpl() : activityId(nil) {}
+
     ~CAppNapImpl()
     {
         if(activityId)
@@ -19,6 +21,7 @@ public:
 
     void disableAppNap()
     {
+#if defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
         if (!activityId)
         {
             @autoreleasepool {
@@ -35,10 +38,12 @@ public:
                 }
             }
         }
+#endif
     }
 
     void enableAppNap()
     {
+#if defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
         if(activityId)
         {
             @autoreleasepool {
@@ -50,6 +55,7 @@ public:
                 activityId = nil;
             }
         }
+#endif
     }
 
 private:

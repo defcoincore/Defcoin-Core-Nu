@@ -22,6 +22,7 @@
 
 void MacNotificationHandler::showNotification(const QString &title, const QString &text)
 {
+#if defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= 1080
     // check if users OS has support for NSUserNotification
     if(this->hasUserNotificationCenterSupport()) {
         NSUserNotification* userNotification = [[NSUserNotification alloc] init];
@@ -30,6 +31,10 @@ void MacNotificationHandler::showNotification(const QString &title, const QStrin
         [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification: userNotification];
         [userNotification release];
     }
+#else
+    Q_UNUSED(title);
+    Q_UNUSED(text);
+#endif
 }
 
 bool MacNotificationHandler::hasUserNotificationCenterSupport(void)

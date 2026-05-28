@@ -75,7 +75,7 @@ FRAMEWORKS="$APP/Contents/Frameworks"
 RESOURCES="$APP/Contents/Resources"
 NU_RESOURCES="$RESOURCES/nu"
 DMG_ROOT="$OUTPUT_DIR/dmg-root"
-VOLNAME="$PRODUCT_NAME $VERSION"
+VOLNAME="$PRODUCT_NAME"
 DMG_RW="$OUTPUT_DIR/${PRODUCT_NAME// /-}-$VERSION-rw.dmg"
 DMG_FINAL="$OUTPUT_DIR/${PRODUCT_NAME// /-}-$VERSION-osx107.dmg"
 
@@ -89,6 +89,9 @@ if [[ -x /usr/libexec/PlistBuddy && -f "$PLIST" ]]; then
   /usr/libexec/PlistBuddy -c "Set :CFBundleName $PRODUCT_NAME" "$PLIST" 2>/dev/null || true
   /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName $PRODUCT_NAME" "$PLIST" 2>/dev/null || true
   /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST" 2>/dev/null || true
+  /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $VERSION" "$PLIST" 2>/dev/null || true
+  /usr/libexec/PlistBuddy -c "Set :LSMinimumSystemVersion 10.7.0" "$PLIST" 2>/dev/null || \
+    /usr/libexec/PlistBuddy -c "Add :LSMinimumSystemVersion string 10.7.0" "$PLIST" 2>/dev/null || true
 fi
 
 cat > "$RESOURCES/qt.conf" <<'EOF'
@@ -193,7 +196,15 @@ rewrite_binary() {
   done < <(otool -L "$bin" | awk 'NR > 1 {print $1}')
 }
 
-APP_EXE="$APP/Contents/MacOS/DefcoinCoreNuLegacy"
+if [[ -x /usr/libexec/PlistBuddy && -f "$PLIST" ]]; then
+  APP_EXE_NAME=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$PLIST" 2>/dev/null || true)
+fi
+APP_EXE_NAME=${APP_EXE_NAME:-DefcoinCoreNuLegacy}
+APP_EXE="$APP/Contents/MacOS/$APP_EXE_NAME"
+if [[ ! -x "$APP_EXE" ]]; then
+  echo "App executable not found or not executable: $APP_EXE" >&2
+  exit 1
+fi
 copy_dependency_closure "$APP_EXE"
 if [[ -n "$DEFCOIND" && -x "$NU_RESOURCES/bin/defcoind" ]]; then
   copy_dependency_closure "$NU_RESOURCES/bin/defcoind"
@@ -274,26 +285,28 @@ MOUNT="/Volumes/$VOLNAME"
 trap 'hdiutil detach "$MOUNT" >/dev/null 2>&1 || hdiutil detach "$DEVICE" >/dev/null 2>&1 || true' EXIT
 
 osascript <<EOF
-tell application "Finder"
-  tell disk "$VOLNAME"
-    open
-    set current view of container window to icon view
-    set toolbar visible of container window to false
-    set statusbar visible of container window to false
-    set bounds of container window to {120, 120, 760, 540}
-    set viewOptions to the icon view options of container window
-    set arrangement of viewOptions to not arranged
-    set icon size of viewOptions to 96
-    set background picture of viewOptions to file ".background:background.png"
-    set position of item "$PRODUCT_NAME.app" of container window to {190, 230}
-    set position of item "Applications" of container window to {450, 230}
-    close
-    open
-    update without registering applications
-    delay 2
-    close
+with timeout of 600 seconds
+  tell application "Finder"
+    tell disk "$VOLNAME"
+      open
+      set current view of container window to icon view
+      set toolbar visible of container window to false
+      set statusbar visible of container window to false
+      set bounds of container window to {120, 120, 760, 540}
+      set viewOptions to the icon view options of container window
+      set arrangement of viewOptions to not arranged
+      set icon size of viewOptions to 72
+      set background picture of viewOptions to file ".background:background.png"
+      set position of item "$PRODUCT_NAME.app" of container window to {150, 285}
+      set position of item "Applications" of container window to {450, 285}
+      close
+      open
+      update without registering applications
+      delay 2
+      close
+    end tell
   end tell
-end tell
+end timeout
 EOF
 
 sync

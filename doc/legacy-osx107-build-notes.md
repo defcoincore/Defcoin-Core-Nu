@@ -103,9 +103,10 @@ Compatibility decision:
 - Keep the current Apple Silicon and Windows 11 build path on the existing Qt 6
   branch.
 - Keep Lion work on a separate branch: `legacy/osx-10.7-qt5.5`.
-- Use Qt 5.5.1 `qtbase`, qmake, and a Qt Widgets shell for the legacy app.
-- Treat this as a compatibility product, not a down-port of the full Qt Quick
-  Controls 2 interface.
+- Use Qt 5.5.1 `qtbase`, qmake, and the classic Qt Widgets wallet for the
+  legacy app.
+- Treat this as a compatibility product. Do not down-port the current Qt Quick
+  Controls 2 interface into the Lion branch.
 
 Remote build workspace:
 
@@ -130,6 +131,8 @@ Initial source change:
   `/Users/david/defcoin-core-nu-build-20260528_034346/src/src/qt/nu/legacy-osx107/DefcoinCoreNuLegacy.app`
 - Built executable is a 64-bit x86_64 Mach-O and links against Qt 5.5.1 from
   the isolated Qt prefix via `@rpath`.
+- This launcher-only app was useful as an early packaging proof, but it is
+  superseded by the full `src/qt/defcoin-qt` wallet build below.
 
 Daemon build notes:
 
@@ -154,21 +157,46 @@ Daemon build notes:
 Packaging:
 
 - Added `contrib/legacy-osx107/package_legacy_dmg.sh`.
-- The package script can run on a newer Mac after rsyncing the Lion-built app,
-  daemon, Qt prefix, OpenSSL3 prefix, CA bundle, and needed MacPorts dylibs.
+- The package script can run on the Lion Mac or on a newer Mac after rsyncing
+  the Lion-built app, daemon, Qt prefix, OpenSSL3 prefix, CA bundle, and needed
+  MacPorts dylibs.
 - The script stages the app as `Defcoin Core Nu.app`, adds
   `Contents/Resources/nu/bin/defcoind`, adds
   `Contents/Resources/nu/ssl/cert.pem`, writes `Contents/Resources/qt.conf`,
   bundles Qt 5.5.1, Qt Cocoa plugin, OpenSSL3, BDB, libevent, sqlite, and
   MacPorts zlib, then rewrites install names for app, plugin, framework, and
   backend locations.
+- The script reads `CFBundleExecutable`, so it can package either the temporary
+  launcher or the real `Defcoin-Qt` app bundle.
+- The script forces `LSMinimumSystemVersion` to `10.7.0`.
 - The script strips stale build-prefix `LC_RPATH` values so the Cocoa plugin
   cannot load Qt from the original Qt build prefix.
 - The DMG must be HFS+, not APFS. The final script forces `-fs HFS+` so
   Mac OS X 10.7.5 can mount the image.
-- The generated DMG background uses
-  `src/qt/nu/assets/brand/defcoin-nu-coin-stack-hires.png` when no explicit
-  background is supplied.
+- The DMG background/layout now matches the Apple Silicon build when passed the
+  Apple Silicon background PNG: 640x420 window, 72px icons, app at `{150, 285}`,
+  and Applications at `{450, 285}`.
+
+Full Qt wallet build:
+
+- Built the Qt translation release tool from Qt Tools 5.5.1 because `lrelease`
+  was missing from the Qt 5.5.1 `qtbase` install.
+- Configured the main source tree with `--with-gui=qt5 --enable-wallet
+  --with-sqlite=yes --without-miniupnpc --without-qrencode --disable-zmq
+  --disable-tests --disable-gui-tests --disable-bench` against the patched Qt
+  5.5.1 prefix, staged Boost 1.76.0, staged fmt 8.1.1, MacPorts BDB 4.8,
+  MacPorts OpenSSL3, MacPorts libevent, and MacPorts sqlite.
+- Added Qt 5.5 compatibility fixes for newer Qt APIs used by the current UI:
+  `setWindowFlag`, `QOverload`, `QDateTime::currentSecsSinceEpoch`,
+  `QList::constFirst/constLast`, `QVector::crbegin/crend`, and
+  `Qt::ISODateWithMs`.
+- Gated `NSUserNotification` and App Nap code for Lion-era SDK support.
+- Built `src/qt/defcoin-qt`, a real 64-bit x86_64 wallet executable.
+- Hid Qt `libQt5*.la` files during the final link because GNU libtool on Lion
+  tried to parse framework arguments from Qt's `.la` dependency metadata and
+  failed with `unhandled argument '-framework'`.
+- Built the native app bundle with `make appbundle`, then packaged
+  `Defcoin-Qt.app` as `Defcoin Core Nu.app`.
 
 Apple Silicon packaging command used:
 
@@ -184,7 +212,7 @@ Apple Silicon packaging command used:
   --version "26.3.1-lion"
 ```
 
-Final local artifact:
+Superseded launcher-only artifact:
 
 - `/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-dmg/Defcoin-Core-Nu-26.3.1-lion-osx107.dmg`
 - Size: about 22 MB.
@@ -192,6 +220,24 @@ Final local artifact:
   `ffb4197f3f71c69228a1a2255f0236ac4525daa32cec1c3400b6632a68ada956`
 - Bundled upgraded backports verified locally before Lion smoke testing:
   OpenSSL `3.6.2`, SQLite `3.53.1`, zlib `1.3.2`, CA bundle `8.19.0`.
+- This artifact mounted and launched, but it only contained the temporary
+  launcher shell and did not provide the full wallet UI.
+
+Final full Qt wallet artifact:
+
+- `/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-dmg/Defcoin-Core-Nu-26.3.1-lion-fullqt-osx107.dmg`
+- Remote source artifact:
+  `/Users/david/defcoin-core-nu-build-20260528_034346/full-qt-package/Defcoin-Core-Nu-26.3.1-lion-fullqt-osx107.dmg`
+- SHA256:
+  `fca4846d1d4f0376a1bf34cdf5df9d5571cd118d623a738ee7e62e4fb7b5307e`
+- `hdiutil verify` on Mac OS X 10.7.5 reports the checksum is valid.
+- The image mounts as Apple_HFS at `/Volumes/Defcoin Core Nu`.
+- The mounted DMG contains `Defcoin Core Nu.app` plus an `/Applications`
+  symlink and the Apple Silicon background art/layout.
+- The packaged app launches from the mounted DMG on Mac OS X 10.7.5.
+- Runtime log evidence from the mounted DMG:
+  `Defcoin Core Nu version v26.3.1-17e38a4-dirty`, `Qt 5.5.1 (dynamic),
+  plugin=cocoa (dynamic)`, and `System: OS X Lion (10.7), x86_64-little_endian-lp64`.
 
 Final Lion validation:
 
@@ -207,13 +253,29 @@ Final Lion validation:
 - Repeated the DMG build and Lion smoke test after the MacPorts backport
   upgrades. `hdiutil verify`, HFS+ attach, packaged `defcoind -version`, and the
   5-second Qt launcher process smoke test all passed.
+- Launched the full wallet GUI on the Lion desktop through Screen Sharing.
+- Created a test wallet named `alegacy-test`; it loaded as Berkeley DB format,
+  generated a keypool, and produced `wallet.dat` under the test datadir.
+- Confirmed network and sync through RPC/logs: `networkactive: true`, 9
+  outbound connections during the wallet test, headers and blocks syncing, and
+  `UpdateTip` entries after block download started.
+- Confirmed LAN discovery/listening defaults in the app config path:
+  `listen=1`, `discover=1`, and `allowlannodediscovery=1`. Runtime peer evidence
+  included LAN peers at `192.168.2.51:1337` and `192.168.3.69:1337`.
+- SSH transfer benchmark with the persistent control socket: Tahoe to Lion
+  moved 64 MB in about 29 seconds; Lion to Tahoe moved 64 MB in about 27
+  seconds. SSH/rsync remains the simplest reliable transfer path, and SMB1 was
+  not needed.
 
 Published release artifact:
 
 - Release: `v26.3.1`
 - Asset:
   `https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-Core-Nu-v26.3.1-macOS-10.7-Lion-Intel.dmg`
-- `SHA256SUMS.txt` on the release was updated to include the Lion Intel DMG.
+- The release asset was replaced after full-wallet validation. Current GitHub
+  asset size: `75910097` bytes.
+- `SHA256SUMS.txt` on the release was updated with the full Qt wallet DMG hash:
+  `fca4846d1d4f0376a1bf34cdf5df9d5571cd118d623a738ee7e62e4fb7b5307e`.
 
 Branch boundary:
 

@@ -501,11 +501,12 @@ QString TrafficGraphWidget::exportSamplesCsv() const
     QString csv = QStringLiteral("timestamp,received_kbps,sent_kbps,avg_peer_latency_ms,jitter_ms\n");
     QVector<TrafficSample> chronological;
     chronological.reserve(vSamples.size());
-    for (auto it = vSamples.crbegin(); it != vSamples.crend(); ++it) {
-        chronological.push_back(*it);
+    for (int i = vSamples.size() - 1; i >= 0; --i) {
+        chronological.push_back(vSamples.at(i));
     }
     for (const TrafficSample& sample : chronological) {
-        csv += QDateTime::fromMSecsSinceEpoch(sample.timestamp_msecs).toString(Qt::ISODateWithMs);
+        const QDateTime timestamp = QDateTime::fromMSecsSinceEpoch(sample.timestamp_msecs);
+        csv += timestamp.toString(Qt::ISODate) + QStringLiteral(".%1").arg(timestamp.time().msec(), 3, 10, QLatin1Char('0'));
         csv += QStringLiteral(",");
         csv += QString::number(sample.in_rate, 'f', 6);
         csv += QStringLiteral(",");
@@ -938,8 +939,8 @@ void TrafficGraphWidget::paintLatencyPath(QPainter& painter, const QVector<Traff
     };
     QVector<LatencyPoint> points;
     QVector<LatencyPoint> jitter_points;
-    for (auto it = samples.crbegin(); it != samples.crend(); ++it) {
-        const TrafficSample& sample = *it;
+    for (int i = samples.size() - 1; i >= 0; --i) {
+        const TrafficSample& sample = samples.at(i);
         const qint64 elapsed = std::max<qint64>(0, std::min<qint64>(range_msecs, sample.timestamp_msecs - min_time));
         const int x = XMARGIN + static_cast<int>(w * elapsed / std::max<qint64>(1, range_msecs));
         if (sample.avg_peer_latency_valid && isReasonableLatencyMS(sample.avg_peer_latency_ms)) {
@@ -1042,8 +1043,8 @@ void TrafficGraphWidget::paintMovingAveragePath(QPainter& painter, const QVector
 
     QVector<TrafficSample> chronological;
     chronological.reserve(samples.size());
-    for (auto it = samples.crbegin(); it != samples.crend(); ++it) {
-        chronological.push_back(*it);
+    for (int i = samples.size() - 1; i >= 0; --i) {
+        chronological.push_back(samples.at(i));
     }
 
     const qint64 window_msecs = static_cast<qint64>(m_moving_average_window_mins) * 60 * 1000;

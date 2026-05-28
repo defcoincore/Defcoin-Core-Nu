@@ -491,7 +491,7 @@ QString permissionsText(NetPermissionFlags permissions)
 QString durationSince(qint64 timestamp)
 {
     if (timestamp <= 0) return QStringLiteral("never");
-    return GUIUtil::formatDurationStr(QDateTime::currentSecsSinceEpoch() - timestamp);
+    return GUIUtil::formatDurationStr((QDateTime::currentMSecsSinceEpoch() / 1000) - timestamp);
 }
 
 QString nodeStateHeight(bool available, int height)
@@ -504,8 +504,8 @@ QString pingHealthSparkline(const QVector<qint64>& samples)
 {
     if (samples.isEmpty()) return QString();
 
-    qint64 low = samples.constFirst();
-    qint64 high = samples.constFirst();
+    qint64 low = samples.first();
+    qint64 high = samples.first();
     for (const qint64 sample : samples) {
         low = std::min(low, sample);
         high = std::max(high, sample);
@@ -749,7 +749,7 @@ public:
 #else
         const auto& peers = DefcoinDemoPeers::peers();
         cachedNodeStats.reserve(peers.size());
-        const qint64 now = QDateTime::currentSecsSinceEpoch();
+        const qint64 now = QDateTime::currentMSecsSinceEpoch() / 1000;
         const qint64 tick = QDateTime::currentMSecsSinceEpoch() / 1000;
 
         for (int i = 0; i < peers.size(); ++i) {
@@ -954,7 +954,7 @@ public:
                 local_stats.nodeStats.nLastRecv = 0;
                 local_stats.nodeStats.nLastTXTime = 0;
                 local_stats.nodeStats.nLastBlockTime = 0;
-                local_stats.nodeStats.nTimeConnected = QDateTime::currentSecsSinceEpoch();
+                local_stats.nodeStats.nTimeConnected = QDateTime::currentMSecsSinceEpoch() / 1000;
                 local_stats.nodeStats.nTimeOffset = 0;
                 local_stats.nodeStats.addrName = local_stats.nodeStats.addr.ToStringIPPort();
                 local_stats.nodeStats.nVersion = PROTOCOL_VERSION;
@@ -1858,7 +1858,7 @@ void PeerTableModel::processPeerLookupQueues()
             --priv->active_fqdn_lookups;
 
             if (dns->error() == QDnsLookup::NoError && !dns->pointerRecords().isEmpty()) {
-                lookup.fqdn = normalizeDnsName(dns->pointerRecords().constFirst().value());
+                lookup.fqdn = normalizeDnsName(dns->pointerRecords().first().value());
                 lookup.next_fqdn_lookup = QDateTime::currentMSecsSinceEpoch() + DNS_LOOKUP_REFRESH_MSECS;
             } else {
                 lookup.next_fqdn_lookup = QDateTime::currentMSecsSinceEpoch() + DNS_LOOKUP_RETRY_MSECS;
@@ -1892,7 +1892,7 @@ void PeerTableModel::processPeerLookupQueues()
         process->setArguments(QStringList{QStringLiteral("-A"), key});
 #endif
         process->setProcessChannelMode(QProcess::MergedChannels);
-        connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this, process, key](int, QProcess::ExitStatus) {
+        connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, [this, process, key](int, QProcess::ExitStatus) {
             PeerTablePriv::PeerLookup& lookup = priv->peer_lookup_cache[key];
             lookup.netbios_pending = false;
             --priv->active_netbios_lookups;
@@ -1921,7 +1921,7 @@ void PeerTableModel::processPeerLookupQueues()
             notifyLookupChanged(key, CustomHostname);
             processPeerLookupQueues();
         });
-        connect(process, &QProcess::errorOccurred, this, [this, process, key](QProcess::ProcessError) {
+        connect(process, static_cast<void (QProcess::*)(QProcess::ProcessError)>(&QProcess::error), this, [this, process, key](QProcess::ProcessError) {
             PeerTablePriv::PeerLookup& lookup = priv->peer_lookup_cache[key];
             lookup.netbios_pending = false;
             --priv->active_netbios_lookups;
@@ -1950,9 +1950,9 @@ void PeerTableModel::processPeerLookupQueues()
             lookup.country_pending = false;
             --priv->active_country_lookups;
 
-            if (dns->error() == QDnsLookup::NoError && !dns->textRecords().isEmpty() && !dns->textRecords().constFirst().values().isEmpty()) {
+            if (dns->error() == QDnsLookup::NoError && !dns->textRecords().isEmpty() && !dns->textRecords().first().values().isEmpty()) {
                 QByteArray txt_bytes;
-                for (const QByteArray& value : dns->textRecords().constFirst().values()) {
+                for (const QByteArray& value : dns->textRecords().first().values()) {
                     txt_bytes += value;
                 }
                 const QString txt = QString::fromUtf8(txt_bytes);
@@ -1978,9 +1978,9 @@ void PeerTableModel::processPeerLookupQueues()
                 connect(as_dns, &QDnsLookup::finished, this, [this, as_dns, key] {
                     PeerTablePriv::PeerLookup& lookup = priv->peer_lookup_cache[key];
                     lookup.as_name_pending = false;
-                    if (as_dns->error() == QDnsLookup::NoError && !as_dns->textRecords().isEmpty() && !as_dns->textRecords().constFirst().values().isEmpty()) {
+                    if (as_dns->error() == QDnsLookup::NoError && !as_dns->textRecords().isEmpty() && !as_dns->textRecords().first().values().isEmpty()) {
                         QByteArray txt_bytes;
-                        for (const QByteArray& value : as_dns->textRecords().constFirst().values()) {
+                        for (const QByteArray& value : as_dns->textRecords().first().values()) {
                             txt_bytes += value;
                         }
                         const QStringList parts = QString::fromUtf8(txt_bytes).split('|');

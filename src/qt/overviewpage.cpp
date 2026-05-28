@@ -326,7 +326,7 @@ void OverviewPage::setWalletModel(WalletModel *model)
             const int current_unit = model->getOptionsModel()->getDisplayUnit();
             const int row = m_unit_selector->findData(current_unit, BitcoinUnits::UnitRole);
             if (row >= 0) m_unit_selector->setCurrentIndex(row);
-            connect(m_unit_selector, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index) {
+            connect(m_unit_selector, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, [this](int index) {
                 if (!walletModel || !walletModel->getOptionsModel() || index < 0) return;
                 walletModel->getOptionsModel()->setDisplayUnit(m_unit_selector->itemData(index, BitcoinUnits::UnitRole));
             });

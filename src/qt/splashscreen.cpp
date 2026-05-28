@@ -38,7 +38,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
 {
     m_elapsed_timer.start();
     m_alive_timer = new QTimer(this);
-    connect(m_alive_timer, &QTimer::timeout, this, QOverload<>::of(&SplashScreen::update));
+    connect(m_alive_timer, &QTimer::timeout, this, static_cast<void (SplashScreen::*)()>(&SplashScreen::update));
     m_alive_timer->start(1000);
 
     const int splashWidth       = 640;
