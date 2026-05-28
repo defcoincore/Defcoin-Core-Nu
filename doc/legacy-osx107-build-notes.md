@@ -311,6 +311,18 @@ Final Lion validation:
   moved 64 MB in about 29 seconds; Lion to Tahoe moved 64 MB in about 27
   seconds. SSH/rsync remains the simplest reliable transfer path, and SMB1 was
   not needed.
+- Final Nu UI DMG validation copied
+  `Defcoin-Core-Nu-26.3.1-lion-nuui-osx107.dmg` back to the Lion Mac, verified
+  it with Lion's `hdiutil`, mounted it at `/Volumes/Defcoin Core Nu`, and
+  launched `DefcoinCoreNuLegacy` from the mounted image.
+- The Nu UI launch produced
+  `/Users/david/defcoin-core-nu-build-20260528_034346/screenshot-nu-ui-lion-final.png`
+  and showed the Nu navigation shell on Mac OS X 10.7.5.
+- The bundled Nu backend was also started from the Lion-staged app with
+  `listen=1`, `discover=1`, and `allowlannodediscovery=1`; it created a fresh
+  test datadir, loaded the wallet subsystem, discovered local addresses, and
+  bound Defcoin port `1337`. The short backend test used `-connect=0` to avoid
+  spending packaging-validation time on outbound sync.
 
 Published release artifact:
 
