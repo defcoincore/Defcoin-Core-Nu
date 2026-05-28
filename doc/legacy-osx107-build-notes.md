@@ -163,7 +163,7 @@ Final Lion validation:
 - `hdiutil attach` mounts the image as Apple_HFS at
   `/Volumes/Defcoin Core Nu 26.3.1-lion`.
 - The packaged daemon runs from the mounted DMG:
-  `Defcoin Core Nu version v26.3.1-a1448ec`.
+  `Defcoin Core Nu version v26.3.1-17e38a4`.
 - The packaged Qt launcher runs from the mounted DMG and stayed alive in a
   5-second process smoke test.
 
