@@ -30,7 +30,10 @@ Observed blockers:
 - The current Nu QML imports use QtQuick 2.15 / QtQuick.Controls 2.15. That is
   not portable to Qt 5.5.1.
 
-MacPorts 2.12.1 is present and its ports tree includes `openssl3 @3.6.1`.
+MacPorts was updated from 2.12.1 to 2.12.5 on 2026-05-28. The ports tree was
+refreshed and `port upgrade outdated` was run successfully. `port outdated`
+then reported no outdated installed ports, and `port uninstall inactive`
+removed inactive duplicate versions.
 
 SSL/TLS notes:
 
@@ -45,6 +48,8 @@ SSL/TLS notes:
 - Retried with `sudo port -s install openssl3`; this built and activated
   `clang-11-bootstrap @11.1.0_6+universal`, then built and activated
   `openssl3 @3.6.1_0`.
+- After `port selfupdate`, MacPorts upgraded the active OpenSSL3 backport to
+  `openssl3 @3.6.2_0`.
 - `openssl3` installs its binary at `/opt/local/libexec/openssl3/bin/openssl`
   and its linkable libraries under `/opt/local/libexec/openssl3/lib`.
 - `openssl3` expects `/opt/local/share/curl/curl-ca-bundle.crt` via
@@ -63,6 +68,35 @@ SSL/TLS notes:
 - `otool -L` on the installed `libQt5Network.5.dylib` confirms linkage to
   `/opt/local/libexec/openssl3/lib/libssl.3.dylib` and
   `/opt/local/libexec/openssl3/lib/libcrypto.3.dylib`.
+
+Current active MacPorts package audit after selfupdate:
+
+- `MacPorts @2.12.5`
+- `openssl3 @3.6.2_0`
+- `curl-ca-bundle @8.19.0_0`
+- `sqlite3 @3.53.1_0`
+- `zlib @1.3.2_0`
+- `openssl @3_30`
+- `autoconf @2.73_0`
+- `automake @1.18.1_0`
+- `libtool @2.5.4_0`
+- `pkgconfig @0.29.2_0`
+- `db48 @4.8.30_5`
+- `libevent @2.1.12_2`
+- `bzip2 @1.0.8_0`
+- `clang-11-bootstrap @11.1.0_6+universal`
+
+Backport notes:
+
+- `qt56-qtbase @5.6.3_17` is present in the current MacPorts tree and appears
+  to be the newest Qt 5 branch with credible OS X 10.7 viability. Qt 5.7
+  supported-platform references list macOS 10.8+ for supported configurations.
+- The MacPorts `qt56-qtbase` and `qt55-qtbase` ports still depend on
+  `openssl10` and `clang-16`, which is a poor fit for this 4 GB Lion build host
+  and for the OpenSSL3 runtime requirement.
+- The shipped legacy shell therefore stays on the already-built patched Qt
+  5.5.1 + OpenSSL3 prefix until a separate Qt 5.6.3 + OpenSSL3 source build can
+  be attempted and tested without destabilizing the working package.
 
 Compatibility decision:
 
@@ -155,7 +189,9 @@ Final local artifact:
 - `/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-dmg/Defcoin-Core-Nu-26.3.1-lion-osx107.dmg`
 - Size: about 22 MB.
 - SHA256:
-  `2eeb1e2859a8df5fe18e103eea1bf26b0592a08f92b6820373acdbbb61ff001a`
+  `ffb4197f3f71c69228a1a2255f0236ac4525daa32cec1c3400b6632a68ada956`
+- Bundled upgraded backports verified locally before Lion smoke testing:
+  OpenSSL `3.6.2`, SQLite `3.53.1`, zlib `1.3.2`, CA bundle `8.19.0`.
 
 Final Lion validation:
 
@@ -168,6 +204,9 @@ Final Lion validation:
   `Defcoin Core Nu version v26.3.1-17e38a4`.
 - The packaged Qt launcher runs from the mounted DMG and stayed alive in a
   5-second process smoke test.
+- Repeated the DMG build and Lion smoke test after the MacPorts backport
+  upgrades. `hdiutil verify`, HFS+ attach, packaged `defcoind -version`, and the
+  5-second Qt launcher process smoke test all passed.
 
 Published release artifact:
 
