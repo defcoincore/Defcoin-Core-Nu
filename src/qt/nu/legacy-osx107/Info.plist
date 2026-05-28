@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>English</string>
+  <key>CFBundleExecutable</key>
+  <string>DefcoinCoreNuLegacy</string>
+  <key>CFBundleIdentifier</key>
+  <string>org.defcoincore.DefcoinCoreNuLegacyLion</string>
+  <key>CFBundleName</key>
+  <string>Defcoin Core Nu Legacy</string>
+  <key>CFBundleDisplayName</key>
+  <string>Defcoin Core Nu Legacy</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleShortVersionString</key>
+  <string>26.3.1-lion</string>
+  <key>CFBundleVersion</key>
+  <string>26.3.1-lion</string>
+  <key>LSMinimumSystemVersion</key>
+  <string>10.7</string>
+  <key>NSHighResolutionCapable</key>
+  <true/>
+</dict>
+</plist>
