@@ -17,6 +17,25 @@ QString appResourceRoot()
     return source.absoluteFilePath("nu");
 }
 
+QString bundledPluginRootFromArgv(char** argv)
+{
+    if (!argv || !argv[0]) return QString();
+    QFileInfo exe(QString::fromLocal8Bit(argv[0]));
+    QDir dir(exe.absoluteDir());
+    if (dir.cdUp() && dir.cd("PlugIns")) {
+        return dir.canonicalPath();
+    }
+    return QString();
+}
+
+void configureBundledQtPlugins(char** argv)
+{
+    const QString pluginRoot = bundledPluginRootFromArgv(argv);
+    if (!pluginRoot.isEmpty()) {
+        qputenv("QT_PLUGIN_PATH", QFile::encodeName(pluginRoot));
+    }
+}
+
 QString defaultDataDir()
 {
     const QString home = QDir::homePath();
@@ -33,6 +52,14 @@ QString backendPath()
     const QString bundled = QDir(appResourceRoot()).filePath("bin/defcoind");
     if (QFileInfo(bundled).isExecutable()) return bundled;
     return QString();
+}
+
+void configureBundledCertificates()
+{
+    const QString bundledCerts = QDir(appResourceRoot()).filePath("ssl/cert.pem");
+    if (QFileInfo(bundledCerts).isReadable()) {
+        qputenv("SSL_CERT_FILE", QFile::encodeName(bundledCerts));
+    }
 }
 
 QString tailFile(const QString& path, int maxLines)
@@ -193,10 +220,16 @@ private:
 
 int main(int argc, char** argv)
 {
+    configureBundledQtPlugins(argv);
     QApplication app(argc, argv);
     QApplication::setApplicationName("Defcoin Core Nu Legacy");
     QApplication::setOrganizationName("Defcoin Core");
     QApplication::setOrganizationDomain("defcoincore.org");
+    const QString pluginRoot = bundledPluginRootFromArgv(argv);
+    if (!pluginRoot.isEmpty()) {
+        QApplication::setLibraryPaths(QStringList() << pluginRoot);
+    }
+    configureBundledCertificates();
 
     MainWindow window;
     window.show();

@@ -30,3 +30,25 @@ MacPorts `openssl3`.
 
 The initial legacy shell is a Qt Widgets launcher/status surface. It is not a
 port of the full Qt Quick Controls 2 application.
+
+Package the app and daemon into a redistributable HFS+ DMG after copying the
+Lion-built outputs and runtime dylibs to a staging directory on the packaging
+Mac:
+
+```sh
+./contrib/legacy-osx107/package_legacy_dmg.sh \
+  --app "/path/to/osx107-stage/DefcoinCoreNuLegacy.app" \
+  --qt-prefix "/path/to/osx107-stage/qt-5.5.1-openssl3test" \
+  --defcoind "/path/to/osx107-stage/defcoind" \
+  --openssl-prefix "/path/to/osx107-stage/openssl3" \
+  --macports-prefix "/path/to/osx107-stage/macports" \
+  --ca-bundle "/path/to/osx107-stage/curl-ca-bundle.crt" \
+  --output-dir "/path/to/osx107-dmg" \
+  --version "26.3.1-lion"
+```
+
+The package script writes `Contents/Resources/qt.conf` and the launcher pins
+`QT_PLUGIN_PATH` to the bundled `Contents/PlugIns` directory. Both are needed on
+the Lion host because Qt 5.5 otherwise falls back to the original Qt build
+prefix and can load a second copy of Qt when resolving the Cocoa platform
+plugin.

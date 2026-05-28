@@ -97,12 +97,78 @@ Initial source change:
 - Built executable is a 64-bit x86_64 Mach-O and links against Qt 5.5.1 from
   the isolated Qt prefix via `@rpath`.
 
-Current remaining work:
+Daemon build notes:
 
-- Build or stage a Lion-compatible `defcoind` backend into the app bundle at
-  `Contents/Resources/nu/bin/defcoind`.
-- Package the Qt dylibs and MacPorts OpenSSL3 dylibs into a redistributable app
-  bundle, or document MacPorts as a runtime prerequisite for this legacy build.
-- Preserve all Lion work on `legacy/osx-10.7-qt5.5`; do not merge these Qt 5.5
-  compatibility constraints into the current Qt 6 Apple Silicon / Windows 11
-  build path.
+- Avoided MacPorts `boost176 +clang11` and `libfmt8` because they tried to pull
+  a large modern compiler/CMake/Python stack onto the 4 GB Lion host.
+- Built a staged static Boost 1.76.0 subset with MacPorts
+  `clang-11-bootstrap` and `b2` built directly in debug mode to avoid an old
+  `/usr/bin/ld` internal error during stripped B2 bootstrap.
+- Built staged static fmt 8.1.1 directly with `clang++`, without CMake.
+- Configured the daemon with the staged Boost/fmt, MacPorts BDB 4.8, sqlite,
+  libevent, and MacPorts `openssl3`.
+- Added a Lion fallback for `std::shared_timed_mutex` in
+  `src/libmw/include/mw/common/Lock.h`; the fallback maps shared locking to a
+  plain mutex only when the macOS deployment target is older than 10.12.
+- Adjusted `src/crypto/scrypt.h` and `src/crypto/scrypt.cpp` so macOS uses the
+  local endian helpers instead of including missing Lion-era endian headers.
+- Built daemon:
+  `/Users/david/defcoin-core-nu-build-20260528_034346/src/src/defcoind`
+- Built daemon is a 64-bit x86_64 Mach-O. Before packaging it links to
+  MacPorts BDB, OpenSSL3, libevent, and sqlite.
+
+Packaging:
+
+- Added `contrib/legacy-osx107/package_legacy_dmg.sh`.
+- The package script can run on a newer Mac after rsyncing the Lion-built app,
+  daemon, Qt prefix, OpenSSL3 prefix, CA bundle, and needed MacPorts dylibs.
+- The script stages the app as `Defcoin Core Nu.app`, adds
+  `Contents/Resources/nu/bin/defcoind`, adds
+  `Contents/Resources/nu/ssl/cert.pem`, writes `Contents/Resources/qt.conf`,
+  bundles Qt 5.5.1, Qt Cocoa plugin, OpenSSL3, BDB, libevent, sqlite, and
+  MacPorts zlib, then rewrites install names for app, plugin, framework, and
+  backend locations.
+- The script strips stale build-prefix `LC_RPATH` values so the Cocoa plugin
+  cannot load Qt from the original Qt build prefix.
+- The DMG must be HFS+, not APFS. The final script forces `-fs HFS+` so
+  Mac OS X 10.7.5 can mount the image.
+- The generated DMG background uses
+  `src/qt/nu/assets/brand/defcoin-nu-coin-stack-hires.png` when no explicit
+  background is supplied.
+
+Apple Silicon packaging command used:
+
+```sh
+./contrib/legacy-osx107/package_legacy_dmg.sh \
+  --app "/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-stage/DefcoinCoreNuLegacy.app" \
+  --qt-prefix "/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-stage/qt-5.5.1-openssl3test" \
+  --defcoind "/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-stage/defcoind" \
+  --openssl-prefix "/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-stage/openssl3" \
+  --macports-prefix "/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-stage/macports" \
+  --ca-bundle "/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-stage/curl-ca-bundle.crt" \
+  --output-dir "/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-dmg" \
+  --version "26.3.1-lion"
+```
+
+Final local artifact:
+
+- `/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-dmg/Defcoin-Core-Nu-26.3.1-lion-osx107.dmg`
+- Size: about 22 MB.
+
+Final Lion validation:
+
+- Copied the DMG to
+  `/Users/david/defcoin-core-nu-build-20260528_034346/Defcoin-Core-Nu-26.3.1-lion-osx107.dmg`.
+- `hdiutil verify` on Mac OS X 10.7.5 reports the checksum is valid.
+- `hdiutil attach` mounts the image as Apple_HFS at
+  `/Volumes/Defcoin Core Nu 26.3.1-lion`.
+- The packaged daemon runs from the mounted DMG:
+  `Defcoin Core Nu version v26.3.1-a1448ec`.
+- The packaged Qt launcher runs from the mounted DMG and stayed alive in a
+  5-second process smoke test.
+
+Branch boundary:
+
+- Preserve all Lion work on `legacy/osx-10.7-qt5.5`.
+- Do not merge these Qt 5.5 compatibility constraints into the current Qt 6
+  Apple Silicon / Windows 11 build path.

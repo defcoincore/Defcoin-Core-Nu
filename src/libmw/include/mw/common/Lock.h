@@ -5,9 +5,31 @@
 // file LICENSE or http://www.opensource.org/licenses/mit-license.php.
 
 #include <memory>
-#include <shared_mutex>
 #include <mutex>
+#include <shared_mutex>
 #include <tuple>
+
+namespace mw {
+namespace compat {
+
+#if defined(__APPLE__) && defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101200
+class SharedTimedMutex
+{
+public:
+    void lock() { m_mutex.lock(); }
+    void unlock() { m_mutex.unlock(); }
+    void lock_shared() { m_mutex.lock(); }
+    void unlock_shared() { m_mutex.unlock(); }
+
+private:
+    std::mutex m_mutex;
+};
+#else
+using SharedTimedMutex = std::shared_timed_mutex;
+#endif
+
+} // namespace compat
+} // namespace mw
 
 template<class T>
 class Reader
@@ -16,7 +38,7 @@ class Reader
     class InnerReader
     {
     public:
-        InnerReader(std::shared_ptr<const U> pObject, std::shared_ptr<std::shared_timed_mutex> pMutex, const bool lock, const bool unlock)
+        InnerReader(std::shared_ptr<const U> pObject, std::shared_ptr<mw::compat::SharedTimedMutex> pMutex, const bool lock, const bool unlock)
             : m_pObject(pObject), m_pMutex(pMutex), m_unlock(unlock)
         {
             if (lock)
@@ -34,12 +56,12 @@ class Reader
         }
 
         std::shared_ptr<const U> m_pObject;
-        std::shared_ptr<std::shared_timed_mutex> m_pMutex;
+        std::shared_ptr<mw::compat::SharedTimedMutex> m_pMutex;
         bool m_unlock;
     };
 
 public:
-    static Reader Create(std::shared_ptr<T> pObject, std::shared_ptr<std::shared_timed_mutex> pMutex, const bool lock, const bool unlock)
+    static Reader Create(std::shared_ptr<T> pObject, std::shared_ptr<mw::compat::SharedTimedMutex> pMutex, const bool lock, const bool unlock)
     {
         return Reader(std::shared_ptr<InnerReader<T>>(new InnerReader<T>(pObject, pMutex, lock, unlock)));
     }
@@ -80,7 +102,7 @@ private:
 class MutexUnlocker
 {
 public:
-    MutexUnlocker(std::shared_ptr<std::shared_timed_mutex> pMutex)
+    MutexUnlocker(std::shared_ptr<mw::compat::SharedTimedMutex> pMutex)
         : m_pMutex(pMutex)
     {
 
@@ -92,7 +114,7 @@ public:
     }
 
 private:
-    std::shared_ptr<std::shared_timed_mutex> m_pMutex;
+    std::shared_ptr<mw::compat::SharedTimedMutex> m_pMutex;
 };
 
 template<class T>
@@ -102,7 +124,7 @@ class Writer : virtual public Reader<T>
     class InnerWriter
     {
     public:
-        InnerWriter(std::shared_ptr<U> pObject, std::shared_ptr<std::shared_timed_mutex> pMutex, const bool lock)
+        InnerWriter(std::shared_ptr<U> pObject, std::shared_ptr<mw::compat::SharedTimedMutex> pMutex, const bool lock)
             : m_pObject(pObject), m_pMutex(pMutex)
         {
             if (lock)
@@ -118,11 +140,11 @@ class Writer : virtual public Reader<T>
         }
 
         std::shared_ptr<U> m_pObject;
-        std::shared_ptr<std::shared_timed_mutex> m_pMutex;
+        std::shared_ptr<mw::compat::SharedTimedMutex> m_pMutex;
     };
 
 public:
-    static Writer Create(std::shared_ptr<T> pObject, std::shared_ptr<std::shared_timed_mutex> pMutex, const bool lock)
+    static Writer Create(std::shared_ptr<T> pObject, std::shared_ptr<mw::compat::SharedTimedMutex> pMutex, const bool lock)
     {
         return Writer(std::shared_ptr<InnerWriter<T>>(new InnerWriter<T>(pObject, pMutex, lock)));
     }
@@ -187,7 +209,7 @@ class Locked
 
 public:
     Locked(std::shared_ptr<T> pObject)
-        : m_pObject(pObject), m_pMutex(std::make_shared<std::shared_timed_mutex>())
+        : m_pObject(pObject), m_pMutex(std::make_shared<mw::compat::SharedTimedMutex>())
     {
 
     }
@@ -216,5 +238,5 @@ public:
 
 private:
     std::shared_ptr<T> m_pObject;
-    std::shared_ptr<std::shared_timed_mutex> m_pMutex;
+    std::shared_ptr<mw::compat::SharedTimedMutex> m_pMutex;
 };
