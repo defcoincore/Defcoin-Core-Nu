@@ -169,6 +169,8 @@ Packaging:
 - The script reads `CFBundleExecutable`, so it can package either the temporary
   launcher or the real `Defcoin-Qt` app bundle.
 - The script forces `LSMinimumSystemVersion` to `10.7.0`.
+- The script copies `src/qt/nu/assets` into `Contents/Resources/nu/assets` when
+  those assets exist, so the Lion Nu shell has the same Nu visual resources.
 - The script strips stale build-prefix `LC_RPATH` values so the Cocoa plugin
   cannot load Qt from the original Qt build prefix.
 - The DMG must be HFS+, not APFS. The final script forces `-fs HFS+` so
@@ -177,7 +179,7 @@ Packaging:
   Apple Silicon background PNG: 640x420 window, 72px icons, app at `{150, 285}`,
   and Applications at `{450, 285}`.
 
-Full Qt wallet build:
+Classic Qt wallet reference build:
 
 - Built the Qt translation release tool from Qt Tools 5.5.1 because `lrelease`
   was missing from the Qt 5.5.1 `qtbase` install.
@@ -197,6 +199,32 @@ Full Qt wallet build:
   failed with `unhandled argument '-framework'`.
 - Built the native app bundle with `make appbundle`, then packaged
   `Defcoin-Qt.app` as `Defcoin Core Nu.app`.
+- This build was later identified as the classic Defcoin Core / standard Qt
+  wallet UI lineage. Keep it as a working Lion reference build. Do not treat it
+  as the Nu interface.
+
+Nu UI Lion build:
+
+- The current Nu UI in `src/qt/nu` is a standalone Qt 6 / QML / Qt Quick
+  Controls 2.15 app. It cannot run directly on OS X 10.7.5.
+- The Lion-compatible Nu artifact therefore uses `src/qt/nu/legacy-osx107`,
+  a Qt 5.5.1 Widgets shell that mirrors the Nu product shell, iconography,
+  route model, status cards, and backend boundary without pulling in the classic
+  `Defcoin-Qt` wallet UI.
+- The Lion Nu shell bundles the Nu assets into
+  `Contents/Resources/nu/assets`, starts the bundled `defcoind` with
+  `listen=1`, `discover=1`, and `allowlannodediscovery=1`, and exposes live
+  node/log status in Home, Wallet, Node, and Activity views.
+- Built on Lion with the patched Qt 5.5.1 prefix through qmake:
+  `src/qt/nu/legacy-osx107/DefcoinCoreNuLegacy.pro`.
+- Staged on Lion with `contrib/legacy-osx107/package_legacy_dmg.sh --no-dmg`
+  so dependency rewriting still happens on the 10.7 machine.
+- The final Nu UI DMG was created on the Tahoe Mac with Python `dmgbuild`
+  instead of Finder AppleScript. This avoids intermittent Finder AppleEvent
+  timeouts on Lion and applies the same 640x420 Apple Silicon DMG background
+  and icon layout.
+- The Tahoe Mac was used only to assemble DMG metadata; the Intel/Lion app was
+  launched and validated on the Mac OS X 10.7.5 machine.
 
 Apple Silicon packaging command used:
 
@@ -238,6 +266,23 @@ Final full Qt wallet artifact:
 - Runtime log evidence from the mounted DMG:
   `Defcoin Core Nu version v26.3.1-17e38a4-dirty`, `Qt 5.5.1 (dynamic),
   plugin=cocoa (dynamic)`, and `System: OS X Lion (10.7), x86_64-little_endian-lp64`.
+- Keep this artifact for reference as the classic Defcoin Core standard-style
+  Lion build.
+
+Final Nu UI Lion artifact:
+
+- `/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-dmg/Defcoin-Core-Nu-26.3.1-lion-nuui-osx107.dmg`
+- SHA256:
+  `e3f6c796ed3a6983aa98c0755789287b9b97da71094a3856886711cb1d39595a`
+- Built from the Lion-staged app archive:
+  `/Users/david/defcoin-core-nu-build-20260528_034346/nu-ui-legacy-stage/Defcoin-Core-Nu-Lion-NuUI-stage.tar.gz`
+- The app launch was tested from the mounted DMG on Mac OS X 10.7.5. Final
+  screenshot:
+  `/Users/david/defcoin-core-nu-build-20260528_034346/screenshot-nu-ui-lion-final.png`
+- The visible UI is the Nu shell with a dark navigation rail, Nu icon, Home,
+  Wallet, Send, Receive, Node, Activity routes, and node status cards.
+- The final DMG was generated with Tahoe-side `dmgbuild` using the Apple Silicon
+  background PNG and icon positions to avoid Lion Finder DMG metadata timeouts.
 
 Final Lion validation:
 

@@ -83,6 +83,10 @@ rm -rf "$STAGE" "$DMG_ROOT"
 mkdir -p "$OUTPUT_DIR" "$STAGE"
 cp -R "$APP_IN" "$APP"
 mkdir -p "$FRAMEWORKS" "$NU_RESOURCES/bin" "$NU_RESOURCES/ssl"
+if [[ -d "$ROOT_DIR/src/qt/nu/assets" ]]; then
+  rm -rf "$NU_RESOURCES/assets"
+  cp -R "$ROOT_DIR/src/qt/nu/assets" "$NU_RESOURCES/assets"
+fi
 
 PLIST="$APP/Contents/Info.plist"
 if [[ -x /usr/libexec/PlistBuddy && -f "$PLIST" ]]; then
