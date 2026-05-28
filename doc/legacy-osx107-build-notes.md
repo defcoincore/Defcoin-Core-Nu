@@ -343,12 +343,12 @@ Published release artifacts:
   `https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-Core-Nu-v26.3.1-macOS-10.7-Lion-Intel-NuUI.dmg`
 - The classic asset remains published as the working Defcoin Core / standard UI
   reference build. Current GitHub asset size: `75910097` bytes.
-- The Nu UI asset was added separately after Lion launch validation. Current
-  GitHub asset size: `29675881` bytes.
+- The Nu UI asset was replaced with the optimized package after Lion launch and
+  backend validation. Current GitHub asset size: `24915606` bytes.
 - `SHA256SUMS.txt` on the release includes both Lion hashes:
   `fca4846d1d4f0376a1bf34cdf5df9d5571cd118d623a738ee7e62e4fb7b5307e`
   for `Defcoin-Core-Nu-v26.3.1-macOS-10.7-Lion-Intel.dmg`, and
-  `e3f6c796ed3a6983aa98c0755789287b9b97da71094a3856886711cb1d39595a`
+  `1b390c0bd2c0978227894256ec1c6729d2a3e48877ce5e149d8641015b99e1ca`
   for `Defcoin-Core-Nu-v26.3.1-macOS-10.7-Lion-Intel-NuUI.dmg`.
 
 Branch boundary:
