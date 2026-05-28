@@ -15,6 +15,8 @@ Options:
                         libevent, sqlite, and db48. Defaults to /opt/local.
   --ca-bundle PATH      Copy CA bundle to Contents/Resources/nu/ssl/cert.pem.
                         Defaults to /opt/local/share/curl/curl-ca-bundle.crt.
+  --product-name NAME   App and volume name. Defaults to "Defcoin Core Nu".
+  --themes-dir PATH     Copy theme resources into Contents/Resources/themes.
   --version VERSION     Version label for the DMG filename. Defaults to 26.3.1-lion.
   --background PATH     PNG image to use as a DMG background. If omitted, one is generated.
   --no-dmg              Stage the app only; do not create a DMG.
@@ -32,6 +34,8 @@ OPENSSL_PREFIX=/opt/local/libexec/openssl3
 MACPORTS_PREFIX=/opt/local
 CA_BUNDLE=/opt/local/share/curl/curl-ca-bundle.crt
 OUTPUT_DIR=
+PRODUCT_NAME="Defcoin Core Nu"
+THEMES_DIR=
 VERSION=26.3.1-lion
 BACKGROUND=
 MAKE_DMG=1
@@ -45,6 +49,8 @@ while [[ $# -gt 0 ]]; do
     --openssl-prefix) OPENSSL_PREFIX=$2; shift 2 ;;
     --macports-prefix) MACPORTS_PREFIX=$2; shift 2 ;;
     --ca-bundle) CA_BUNDLE=$2; shift 2 ;;
+    --product-name) PRODUCT_NAME=$2; shift 2 ;;
+    --themes-dir) THEMES_DIR=$2; shift 2 ;;
     --output-dir) OUTPUT_DIR=$2; shift 2 ;;
     --version) VERSION=$2; shift 2 ;;
     --background) BACKGROUND=$2; shift 2 ;;
@@ -71,7 +77,6 @@ if [[ ! -d "$QT_PREFIX" ]]; then
 fi
 
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
-PRODUCT_NAME="Defcoin Core Nu"
 STAGE="$OUTPUT_DIR/stage"
 APP="$STAGE/$PRODUCT_NAME.app"
 FRAMEWORKS="$APP/Contents/Frameworks"
@@ -96,6 +101,9 @@ if [[ -x /usr/libexec/PlistBuddy && -f "$PLIST" ]]; then
   /usr/libexec/PlistBuddy -c "Set :LSMinimumSystemVersion 10.7.0" "$PLIST" 2>/dev/null || \
     /usr/libexec/PlistBuddy -c "Add :LSMinimumSystemVersion string 10.7.0" "$PLIST" 2>/dev/null || true
 fi
+if [[ -d "$RESOURCES/Base.lproj" ]]; then
+  printf '{\tCFBundleDisplayName = "%s"; CFBundleName = "%s"; }\n' "$PRODUCT_NAME" "$PRODUCT_NAME" > "$RESOURCES/Base.lproj/InfoPlist.strings"
+fi
 
 cat > "$RESOURCES/qt.conf" <<'EOF'
 [Paths]
@@ -112,6 +120,14 @@ fi
 
 if [[ -f "$CA_BUNDLE" ]]; then
   cp "$CA_BUNDLE" "$NU_RESOURCES/ssl/cert.pem"
+fi
+if [[ -n "$THEMES_DIR" ]]; then
+  if [[ ! -d "$THEMES_DIR" ]]; then
+    echo "Theme resource directory not found: $THEMES_DIR" >&2
+    exit 1
+  fi
+  rm -rf "$RESOURCES/themes"
+  cp -R "$THEMES_DIR" "$RESOURCES/themes"
 fi
 
 copy_dylib() {
@@ -247,6 +263,9 @@ done
 find "$APP/Contents/PlugIns" -type f \( -name "*.dylib" -o -name "*.so" \) -print0 | while IFS= read -r -d '' file; do
   copy_dependency_closure "$file"
   rewrite_binary "$file" "@loader_path/../../Frameworks"
+done
+find "$FRAMEWORKS" -type f \( -name "*.dylib" -o -name "*.so" \) -print0 | while IFS= read -r -d '' file; do
+  rewrite_binary "$file" "@loader_path"
 done
 
 if [[ -n "$DEFCOIND" && -x "$NU_RESOURCES/bin/defcoind" ]]; then

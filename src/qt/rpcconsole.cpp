@@ -1972,7 +1972,11 @@ private:
 
     void paintGlobe(QPainter& painter, const QRectF& globe_rect)
     {
+#if QT_VERSION >= 0x050600
         const qreal pixel_ratio = devicePixelRatioF();
+#else
+        const qreal pixel_ratio = devicePixelRatio();
+#endif
         const bool moving = m_dragging ||
                             std::abs(m_spin_velocity_longitude) > 0.002 ||
                             std::abs(m_spin_velocity_latitude) > 0.002 ||
@@ -1987,7 +1991,11 @@ private:
         const int image_size = std::max(420, static_cast<int>(std::min<qreal>(max_raster, globe_rect.width() * pixel_ratio)));
         const int lat_key = static_cast<int>(std::llround(m_center_latitude * 20.0));
         const int lon_key = static_cast<int>(std::llround(normalizeLongitude(m_center_longitude) * 20.0));
+#if QT_VERSION >= 0x050800
         const int sun_key = QDateTime::currentDateTimeUtc().toSecsSinceEpoch() / 600;
+#else
+        const int sun_key = QDateTime::currentDateTimeUtc().toTime_t() / 600;
+#endif
         const bool cache_hit = !moving &&
                                !m_cached_globe_image.isNull() &&
                                m_cached_globe_size == QSize(image_size, image_size) &&

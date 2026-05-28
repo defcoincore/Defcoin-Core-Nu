@@ -169,10 +169,20 @@ Packaging:
 - The script reads `CFBundleExecutable`, so it can package either the temporary
   launcher or the real `Defcoin-Qt` app bundle.
 - The script forces `LSMinimumSystemVersion` to `10.7.0`.
+- The script accepts `--product-name` for variant packages such as
+  `Defcoin Core Nu DC34 Edition.app`, and rewrites both `Info.plist` and
+  `Base.lproj/InfoPlist.strings` so Finder does not fall back to stale
+  localized `Defcoin Core` naming.
+- The script accepts `--themes-dir` and copies theme resources into
+  `Contents/Resources/themes`.
 - The script copies `src/qt/nu/assets` into `Contents/Resources/nu/assets` when
   those assets exist, so the Lion Nu shell has the same Nu visual resources.
 - The script strips stale build-prefix `LC_RPATH` values so the Cocoa plugin
   cannot load Qt from the original Qt build prefix.
+- The Cocoa plugin can pull in `libQt5PrintSupport.5.dylib` after the first
+  framework rewrite pass, so the script runs a final framework rewrite after
+  plugin dependency closure. This prevents the packaged app from loading Qt
+  from the build prefix.
 - The DMG must be HFS+, not APFS. The final script forces `-fs HFS+` so
   Mac OS X 10.7.5 can mount the image.
 - The DMG background/layout now matches the Apple Silicon build when passed the
@@ -293,6 +303,34 @@ Final Nu UI Lion artifact:
   from about 28 MB to about 24 MB. The staged `defcoind` dropped from 47 MB to
   36 MB after symbol stripping, runtime Nu assets dropped from 3.0 MB to 788 KB,
   and QtNetwork is no longer bundled for the Nu shell.
+
+Final DC34 Lion artifact:
+
+- `/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-dmg/Defcoin-Core-Nu-v26.3.1-macOS-10.7-Lion-Intel-DC34.dmg`
+- Remote source artifact:
+  `/Users/david/defcoin-core-nu-build-20260528_034346/dc34-lion-dmg-v2/Defcoin-Core-Nu-DC34-Edition-26.3.1-dc34-lion-osx107.dmg`
+- SHA256:
+  `41be6742a895ed1aba96329f9bfa8670dc33b1ecacd1212df6bc29d244108159`
+- Built from the Lion-compatible classic Qt wallet path with
+  `CPPFLAGS="-DENABLE_DEFCOIN_FUN_UI=1 ..."`. The resulting version string is
+  `Defcoin Core Nu DC34 Edition version v26.3.1-dc34-17e38a4-dirty`.
+- The first parallel `make -j2 src/qt/defcoin-qt src/defcoind` hit a LevelDB
+  parallel-build race, so the successful retry built `src/qt/defcoin-qt` as a
+  single target after `defcoind` existed.
+- Added Qt 5.5 compatibility for the DC34 peer-map widget by falling back from
+  `devicePixelRatioF()` to `devicePixelRatio()` and from
+  `QDateTime::toSecsSinceEpoch()` to `QDateTime::toTime_t()`.
+- Packaged as `Defcoin Core Nu DC34 Edition.app`, with the full
+  `src/qt/res/themes` directory included so the `DC34` theme is present in the
+  mounted app.
+- `hdiutil verify` on Mac OS X 10.7.5 reports the checksum is valid.
+- The image mounts as Apple_HFS at `/Volumes/Defcoin Core Nu DC34 Edition`.
+- The packaged app launches from the mounted DMG on Mac OS X 10.7.5, shows the
+  DC34-branded menu/window title, and completed a clean AppleScript quit cycle.
+  Screenshot:
+  `/Users/david/defcoin-core-nu-build-20260528_034346/screenshot-dc34-lion-v2.png`
+- Packaged `Defcoin-Qt --version` and bundled `nu/bin/defcoind --version` both
+  run from inside the mounted DMG without `DYLD_LIBRARY_PATH`.
 
 Final Lion validation:
 
