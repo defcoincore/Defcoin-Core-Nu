@@ -154,6 +154,8 @@ Final local artifact:
 
 - `/Volumes/TB5_4TB/d/litecoincore/Defcoin Core Nu/build/osx107-dmg/Defcoin-Core-Nu-26.3.1-lion-osx107.dmg`
 - Size: about 22 MB.
+- SHA256:
+  `2eeb1e2859a8df5fe18e103eea1bf26b0592a08f92b6820373acdbbb61ff001a`
 
 Final Lion validation:
 
@@ -166,6 +168,13 @@ Final Lion validation:
   `Defcoin Core Nu version v26.3.1-17e38a4`.
 - The packaged Qt launcher runs from the mounted DMG and stayed alive in a
   5-second process smoke test.
+
+Published release artifact:
+
+- Release: `v26.3.1`
+- Asset:
+  `https://github.com/defcoincore/Defcoin-Core-Nu/releases/download/v26.3.1/Defcoin-Core-Nu-v26.3.1-macOS-10.7-Lion-Intel.dmg`
+- `SHA256SUMS.txt` on the release was updated to include the Lion Intel DMG.
 
 Branch boundary:
 
